@@ -87,7 +87,6 @@ export default function PostCard({ post, density = "comfortable", myUserId }: Pr
   }
 
   async function react(emoji: string) {
-    // Optimistic update
     const alreadyReacted = reactions.some(
       (r) => r.emoji === emoji && r.userId === (myUserId ?? "")
     );
@@ -103,7 +102,6 @@ export default function PostCard({ post, density = "comfortable", myUserId }: Pr
         body: JSON.stringify({ emoji }),
       });
     } catch {
-      // Revert on error
       setReactions(post.reactions ?? []);
     }
   }
@@ -147,26 +145,44 @@ export default function PostCard({ post, density = "comfortable", myUserId }: Pr
   }
 
   const isAuthor = myUserId && post.author.id && myUserId === post.author.id;
+  const avatarSize = density === "compact" ? 28 : 38;
+  const accentColor = post.author.accentColor;
 
   return (
     <article
       onClick={() => !editing && router.push(`/p/${post.id}`)}
-      className="px-4 py-4 border-b border-[var(--border)] hover:bg-[var(--surface)]/40 cursor-pointer transition fade-in"
+      className="px-4 py-4 border-b border-[var(--border)] hover:bg-[var(--surface)]/30 cursor-pointer transition-colors fade-in"
     >
       <div className="flex gap-3">
-        <Avatar
-          username={post.author.username}
-          accentColor={post.author.accentColor}
+        {/* Avatar */}
+        <Link
           href={`/u/${post.author.username}`}
-          size={density === "compact" ? "sm" : "md"}
-        />
+          onClick={e => e.stopPropagation()}
+          className="hover:opacity-90 shrink-0"
+          style={{ width: avatarSize, height: avatarSize }}
+        >
+          <span
+            className="avatar"
+            style={{
+              width: avatarSize,
+              height: avatarSize,
+              fontSize: density === "compact" ? 11 : 14,
+              background: accentColor
+                ? `linear-gradient(135deg, ${accentColor}88, ${accentColor})`
+                : undefined,
+            }}
+          >
+            {(post.author.displayName || post.author.username)[0]?.toUpperCase()}
+          </span>
+        </Link>
+
         <div className="flex-1 min-w-0">
-          {/* Top meta row */}
-          <div className="flex items-center gap-1.5 text-[13px] text-gray-400 flex-wrap">
+          {/* Meta row */}
+          <div className="flex items-center gap-1.5 text-[13px] text-[var(--muted)] flex-wrap">
             <Link
               href={`/u/${post.author.username}`}
               onClick={e => e.stopPropagation()}
-              className="font-semibold text-white hover:underline"
+              className="font-semibold text-[var(--foreground)] hover:underline"
             >
               {post.author.displayName || post.author.username}
             </Link>
@@ -182,7 +198,7 @@ export default function PostCard({ post, density = "comfortable", myUserId }: Pr
                 {density !== "compact" && <span>{post.author.displayBadge.name}</span>}
               </span>
             )}
-            <span className="text-gray-500">@{post.author.username}</span>
+            <span className="text-[var(--muted-2)]">@{post.author.username}</span>
             {post.community && (
               <>
                 <span>·</span>
@@ -190,7 +206,7 @@ export default function PostCard({ post, density = "comfortable", myUserId }: Pr
                   href={`/c/${post.community.slug}`}
                   onClick={e => e.stopPropagation()}
                   className="hover:underline font-medium"
-                  style={{ color: post.community.themeColor || "#ec4899" }}
+                  style={{ color: post.community.themeColor || "var(--accent)" }}
                 >
                   c/{post.community.slug}
                 </Link>
@@ -199,12 +215,12 @@ export default function PostCard({ post, density = "comfortable", myUserId }: Pr
             <span>·</span>
             <span>{timeAgo(post.createdAt)}</span>
             {post.pinned && (
-              <span title="Pinned" className="inline-flex items-center text-pink-400">
+              <span title="Pinned" className="inline-flex items-center text-[var(--accent)]">
                 <Pin size={13} strokeWidth={2.2} />
               </span>
             )}
             {post.locked && (
-              <span title="Locked" className="inline-flex items-center text-gray-400">
+              <span title="Locked" className="inline-flex items-center text-[var(--muted)]">
                 <Lock size={13} strokeWidth={2.2} />
               </span>
             )}
@@ -224,27 +240,27 @@ export default function PostCard({ post, density = "comfortable", myUserId }: Pr
               <input
                 value={editTitle}
                 onChange={e => setEditTitle(e.target.value)}
-                className="w-full bg-black/40 border border-white/20 rounded-lg px-3 py-1.5 text-[15px] font-semibold text-white"
+                className="input text-[15px] font-semibold"
                 onClick={e => e.stopPropagation()}
               />
               <textarea
                 value={editContent}
                 onChange={e => setEditContent(e.target.value)}
                 rows={4}
-                className="w-full bg-black/40 border border-white/20 rounded-lg px-3 py-1.5 text-[14px] text-gray-200 resize-none"
+                className="input text-[14px] resize-none"
                 onClick={e => e.stopPropagation()}
               />
               <div className="flex gap-2">
                 <button
                   onClick={saveEdit}
                   disabled={editSaving}
-                  className="px-3 py-1 rounded-full bg-pink-500/80 hover:bg-pink-500 text-white text-xs font-medium disabled:opacity-50"
+                  className="btn-primary text-xs px-4 py-1.5"
                 >
                   {editSaving ? "Saving..." : "Save"}
                 </button>
                 <button
                   onClick={cancelEdit}
-                  className="px-3 py-1 rounded-full border border-white/20 hover:bg-white/10 text-xs"
+                  className="btn-ghost text-xs px-4 py-1.5"
                 >
                   Cancel
                 </button>
@@ -252,9 +268,11 @@ export default function PostCard({ post, density = "comfortable", myUserId }: Pr
             </div>
           ) : (
             <>
-              <h2 className="text-[16px] font-semibold mt-1 leading-snug text-white">{displayTitle}</h2>
+              <h2 className="text-[17px] font-semibold mt-2 leading-snug text-[var(--foreground)]">
+                {displayTitle}
+              </h2>
               {density !== "compact" && displayContent && (
-                <p className="text-[15px] text-gray-300 mt-1 whitespace-pre-wrap clamp-3">
+                <p className="text-[15px] text-[var(--muted)] mt-1.5 leading-relaxed clamp-3">
                   {displayContent}
                 </p>
               )}
@@ -262,35 +280,42 @@ export default function PostCard({ post, density = "comfortable", myUserId }: Pr
           )}
 
           {/* Action row */}
-          <div className="flex items-center gap-1 mt-3 -ml-2 text-gray-400 flex-wrap" onClick={e => e.stopPropagation()}>
+          <div
+            className="flex items-center gap-1 mt-3 -ml-1.5 text-[var(--muted)] flex-wrap"
+            onClick={e => e.stopPropagation()}
+          >
             <button
               onClick={() => vote(1)}
               aria-label="upvote"
-              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full hover:bg-pink-500/10 transition ${myVote === 1 ? "text-pink-400" : ""}`}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full hover:bg-[var(--surface-3)] transition-colors text-[13px] ${myVote === 1 ? "text-[var(--accent)]" : ""}`}
             >
-              <ArrowBigUp size={20} strokeWidth={1.8} fill={myVote === 1 ? "currentColor" : "none"} />
+              <ArrowBigUp size={18} strokeWidth={1.8} fill={myVote === 1 ? "currentColor" : "none"} />
             </button>
-            <span className={`text-[13px] font-semibold min-w-[20px] text-center ${myVote === 1 ? "text-pink-400" : myVote === -1 ? "text-purple-400" : "text-gray-300"}`}>
+            <span
+              className={`text-[13px] font-semibold min-w-[16px] text-center ${
+                myVote === 1 ? "text-[var(--accent)]" : myVote === -1 ? "text-purple-400" : "text-[var(--foreground)]"
+              }`}
+            >
               {score}
             </span>
             <button
               onClick={() => vote(-1)}
               aria-label="downvote"
-              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full hover:bg-purple-500/10 transition ${myVote === -1 ? "text-purple-400" : ""}`}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full hover:bg-[var(--surface-3)] transition-colors text-[13px] ${myVote === -1 ? "text-purple-400" : ""}`}
             >
-              <ArrowBigDown size={20} strokeWidth={1.8} fill={myVote === -1 ? "currentColor" : "none"} />
+              <ArrowBigDown size={18} strokeWidth={1.8} fill={myVote === -1 ? "currentColor" : "none"} />
             </button>
             <Link
               href={`/p/${post.id}`}
               onClick={e => e.stopPropagation()}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-blue-500/10 hover:text-blue-300 transition text-[13px]"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full hover:bg-[var(--surface-3)] transition-colors text-[13px]"
             >
               <MessageCircle size={16} strokeWidth={1.8} />
               <span>{post.commentCount}</span>
             </Link>
             <button
               onClick={toggleSave}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-yellow-500/10 transition text-[13px] ${saved ? "text-yellow-300" : ""}`}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full hover:bg-[var(--surface-3)] transition-colors text-[13px] ${saved ? "text-yellow-400" : ""}`}
             >
               {saved
                 ? <BookmarkCheck size={16} strokeWidth={2} fill="currentColor" />
@@ -299,7 +324,7 @@ export default function PostCard({ post, density = "comfortable", myUserId }: Pr
             </button>
             <button
               onClick={sharePost}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-green-500/10 hover:text-green-300 transition text-[13px] ${copied ? "text-green-300" : ""}`}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full hover:bg-[var(--surface-3)] transition-colors text-[13px] ${copied ? "text-[var(--green)]" : ""}`}
             >
               <Share2 size={16} strokeWidth={1.8} />
               <span className="hidden sm:inline">{copied ? "Copied!" : "Share"}</span>
@@ -307,7 +332,7 @@ export default function PostCard({ post, density = "comfortable", myUserId }: Pr
             {isAuthor && !editing && (
               <button
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); setEditing(true); }}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-white/10 transition text-[13px]"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full hover:bg-[var(--surface-3)] transition-colors text-[13px]"
               >
                 <Pencil size={15} strokeWidth={1.8} />
                 <span className="hidden sm:inline">Edit</span>
@@ -325,7 +350,7 @@ export default function PostCard({ post, density = "comfortable", myUserId }: Pr
                 });
                 alert("Report submitted. A human mod will look at it.");
               }}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-red-500/10 hover:text-red-300 transition text-[13px] ml-auto"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full hover:bg-[var(--surface-3)] hover:text-[var(--red)] transition-colors text-[13px] ml-auto"
               title="Report"
               aria-label="Report"
             >
@@ -334,7 +359,7 @@ export default function PostCard({ post, density = "comfortable", myUserId }: Pr
           </div>
 
           {/* Reactions row */}
-          <div className="flex items-center gap-1 mt-1 -ml-1 flex-wrap" onClick={e => e.stopPropagation()}>
+          <div className="flex flex-wrap gap-1 mt-2" onClick={e => e.stopPropagation()}>
             {REACTION_EMOJIS.map((emoji) => {
               const count = reactions.filter((r) => r.emoji === emoji).length;
               const reacted = myUserId
@@ -344,15 +369,15 @@ export default function PostCard({ post, density = "comfortable", myUserId }: Pr
                 <button
                   key={emoji}
                   onClick={() => react(emoji)}
-                  className={`flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[13px] border transition hover:scale-110 ${
+                  className={`flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[12px] border transition-colors ${
                     reacted
-                      ? "border-pink-500/60 bg-pink-500/15 text-white"
-                      : "border-white/10 hover:border-white/30 hover:bg-white/5 text-gray-400"
+                      ? "border-[var(--accent)]/60 bg-[var(--accent-soft)] text-[var(--foreground)]"
+                      : "border-[var(--border)] bg-[var(--surface-3)] hover:bg-[var(--surface-2)] text-[var(--muted)]"
                   }`}
                 >
                   <span>{emoji}</span>
                   {count > 0 && (
-                    <span className={`text-[11px] font-medium ${reacted ? "text-pink-300" : "text-gray-400"}`}>
+                    <span className={`text-[11px] font-medium ${reacted ? "text-[var(--accent)]" : "text-[var(--muted)]"}`}>
                       {count}
                     </span>
                   )}

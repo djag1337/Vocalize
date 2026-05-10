@@ -20,15 +20,48 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center px-6 bg-gradient-to-br from-purple-950 via-black to-pink-950 text-white">
-      <form onSubmit={submit} className="w-full max-w-md space-y-4 bg-white/5 backdrop-blur p-8 rounded-2xl border border-white/10">
-        <h1 className="text-3xl font-bold text-center bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Welcome back</h1>
-        <input className="w-full px-4 py-3 rounded-lg bg-black/40 border border-white/10 focus:border-purple-400 outline-none" placeholder="Email" type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})} />
-        <input className="w-full px-4 py-3 rounded-lg bg-black/40 border border-white/10 focus:border-purple-400 outline-none" placeholder="Password" type="password" value={form.password} onChange={e => setForm({...form, password: e.target.value})} />
-        {err && <p className="text-red-400 text-sm">{err}</p>}
-        <button disabled={loading} className="w-full py-3 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 font-semibold disabled:opacity-50">{loading ? "Signing in..." : "Log in"}</button>
-        <p className="text-center text-sm text-gray-400">No account? <Link href="/register" className="text-purple-400 hover:underline">Sign up</Link></p>
-      </form>
+    <main className="min-h-screen flex items-center justify-center px-6 bg-[var(--background)] text-[var(--foreground)]">
+      <div className="w-full max-w-sm">
+        {/* Wordmark */}
+        <div className="text-center mb-8">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-[var(--accent-2)] to-[var(--accent)] bg-clip-text text-transparent">
+            Vocalize
+          </h1>
+          <p className="text-[var(--muted)] text-[14px] mt-1.5">Real conversations. Real people.</p>
+        </div>
+
+        <form onSubmit={submit} className="space-y-3">
+          <input
+            className="input"
+            placeholder="Email"
+            type="email"
+            value={form.email}
+            onChange={e => setForm({ ...form, email: e.target.value })}
+          />
+          <input
+            className="input"
+            placeholder="Password"
+            type="password"
+            value={form.password}
+            onChange={e => setForm({ ...form, password: e.target.value })}
+          />
+          {err && <p className="text-[var(--red)] text-[13px]">{err}</p>}
+          <button
+            type="submit"
+            disabled={loading}
+            className="btn-primary w-full mt-1"
+          >
+            {loading ? "Signing in..." : "Log in"}
+          </button>
+        </form>
+
+        <p className="text-center text-[13px] text-[var(--muted)] mt-6">
+          No account?{" "}
+          <Link href="/register" className="text-[var(--foreground)] font-medium hover:underline">
+            Sign up
+          </Link>
+        </p>
+      </div>
     </main>
   );
 }

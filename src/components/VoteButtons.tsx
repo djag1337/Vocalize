@@ -33,21 +33,31 @@ export default function VoteButtons({ postId, initialScore, initialVote }: { pos
   }
 
   return (
-    <div className="flex flex-col items-center gap-1 select-none">
+    <div className="flex items-center gap-1 select-none">
       <button
         onClick={() => cast(1)}
         aria-label="upvote"
-        className={`transition ${vote === 1 ? "text-pink-400" : "text-gray-500 hover:text-pink-300"}`}
+        className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full hover:bg-[var(--surface-3)] transition-colors ${
+          vote === 1 ? "text-[var(--accent)]" : "text-[var(--muted)] hover:text-[var(--foreground)]"
+        }`}
       >
-        <ArrowBigUp size={22} strokeWidth={1.8} fill={vote === 1 ? "currentColor" : "none"} />
+        <ArrowBigUp size={20} strokeWidth={1.8} fill={vote === 1 ? "currentColor" : "none"} />
       </button>
-      <span className={`text-sm font-semibold ${vote === 1 ? "text-pink-400" : vote === -1 ? "text-purple-400" : "text-gray-300"}`}>{score}</span>
+      <span
+        className={`text-[14px] font-semibold min-w-[20px] text-center ${
+          vote === 1 ? "text-[var(--accent)]" : vote === -1 ? "text-purple-400" : "text-[var(--foreground)]"
+        }`}
+      >
+        {score}
+      </span>
       <button
         onClick={() => cast(-1)}
         aria-label="downvote"
-        className={`transition ${vote === -1 ? "text-purple-400" : "text-gray-500 hover:text-purple-300"}`}
+        className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full hover:bg-[var(--surface-3)] transition-colors ${
+          vote === -1 ? "text-purple-400" : "text-[var(--muted)] hover:text-[var(--foreground)]"
+        }`}
       >
-        <ArrowBigDown size={22} strokeWidth={1.8} fill={vote === -1 ? "currentColor" : "none"} />
+        <ArrowBigDown size={20} strokeWidth={1.8} fill={vote === -1 ? "currentColor" : "none"} />
       </button>
     </div>
   );

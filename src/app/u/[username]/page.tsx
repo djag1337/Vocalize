@@ -53,18 +53,23 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-purple-950 via-black to-pink-950 text-white">
-      <header className="border-b border-white/10 backdrop-blur sticky top-0 bg-black/40 z-10">
-        <div className="max-w-2xl mx-auto px-6 py-4 flex justify-between items-center">
-          <Link href="/feed" className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-            Vocalize
+    <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
+      {/* Sticky back-nav */}
+      <header className="sticky top-0 z-10 bg-[var(--background)]/90 backdrop-blur border-b border-[var(--border)] px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Link
+            href="/feed"
+            className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-[var(--surface-2)] transition-colors text-[var(--muted)] hover:text-[var(--foreground)]"
+          >
+            ←
           </Link>
-          {isMe && (
-            <Link href="/settings" className="px-3 py-1 rounded-full border border-white/20 hover:bg-white/10 text-xs">
-              Edit profile
-            </Link>
-          )}
+          <span className="font-semibold text-[15px]">{user.displayName || user.username}</span>
         </div>
+        {isMe && (
+          <Link href="/settings" className="btn-ghost text-xs py-1.5 px-4">
+            Edit profile
+          </Link>
+        )}
       </header>
 
       <div className="max-w-2xl mx-auto">
@@ -75,13 +80,13 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
           ) : (
             <div
               className="w-full h-full"
-              style={{ background: `linear-gradient(135deg, ${user.themeColor}, ${user.accentColor})` }}
+              style={{ background: `linear-gradient(135deg, ${user.themeColor || "var(--accent-2)"}, ${user.accentColor || "var(--accent)"})` }}
             />
           )}
-          {/* Avatar — overlaps banner */}
+          {/* Avatar overlapping banner */}
           <div
-            className="absolute bottom-0 left-6 translate-y-1/2 w-28 h-28 rounded-full border-4 flex items-center justify-center text-4xl font-bold overflow-hidden shrink-0"
-            style={{ borderColor: "rgb(3 0 20)", background: user.themeColor }}
+            className="absolute bottom-0 left-6 translate-y-1/2 w-24 h-24 rounded-full border-4 flex items-center justify-center text-3xl font-bold overflow-hidden shrink-0"
+            style={{ borderColor: "var(--background)", background: user.themeColor || "var(--surface-2)" }}
           >
             {user.avatarUrl ? (
               <img src={user.avatarUrl} alt="" className="w-full h-full object-cover" />
@@ -92,11 +97,11 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
         </div>
 
         {/* Name area */}
-        <div className="pt-16 px-6">
+        <div className="pt-16 px-5">
           <div className="flex items-start justify-between gap-3">
             <div className="flex flex-col gap-1">
               <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-2xl font-bold" style={{ color: user.accentColor }}>
+                <h1 className="text-xl font-bold" style={{ color: user.accentColor || "var(--foreground)" }}>
                   {user.displayName || user.username}
                 </h1>
                 {user.displayBadge && (
@@ -113,31 +118,30 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
                   </span>
                 )}
               </div>
-              <p className="text-gray-400 text-sm">
+              <p className="text-[var(--muted)] text-[13px]">
                 @{user.username} · joined {new Date(user.createdAt).toLocaleDateString()}
               </p>
             </div>
           </div>
 
           {user.bio && (
-            <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-4 mt-4">
-              <p className="text-gray-200 whitespace-pre-wrap">{user.bio}</p>
+            <div className="surface p-4 mt-4">
+              <p className="text-[var(--muted)] text-[15px] whitespace-pre-wrap leading-relaxed">{user.bio}</p>
             </div>
           )}
 
           {user.nowPlaying && (
-            <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-4 mt-4 flex items-center gap-3">
+            <div className="surface p-4 mt-4 flex items-center gap-3">
               {/* Animated equalizer bars */}
               <div className="flex items-end gap-[3px] h-5 shrink-0">
                 {[3, 5, 4, 6, 3].map((h, i) => (
                   <div
                     key={i}
-                    className="w-1 rounded-full animate-bounce"
+                    className="w-1 rounded-full eq-bar"
                     style={{
                       height: `${h * 3}px`,
-                      background: user.accentColor,
-                      animationDelay: `${i * 0.1}s`,
-                      animationDuration: "0.8s",
+                      background: user.accentColor || "var(--accent)",
+                      animationDelay: `${i * 0.15}s`,
                     }}
                   />
                 ))}
@@ -155,8 +159,8 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
                 </div>
               ) : (
                 <div className="flex-1">
-                  <div className="text-xs text-gray-400 mb-0.5">Now Playing</div>
-                  <div className="text-sm font-medium text-white">{user.nowPlaying}</div>
+                  <div className="text-[12px] text-[var(--muted)] mb-0.5">Now Playing</div>
+                  <div className="text-[14px] font-medium">{user.nowPlaying}</div>
                 </div>
               )}
             </div>
@@ -164,30 +168,24 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
 
           {/* Stats */}
           <div className="grid grid-cols-3 gap-3 mt-4 mb-6">
-            <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-3 text-center">
-              <div className="text-xl font-bold" style={{ color: user.accentColor }}>
-                {user._count.posts}
+            {[
+              { value: user._count.posts, label: "posts" },
+              { value: user._count.comments, label: "comments" },
+              { value: user.badges.length, label: "badges" },
+            ].map(({ value, label }) => (
+              <div key={label} className="surface p-3 text-center">
+                <div className="text-xl font-bold" style={{ color: user.accentColor || "var(--foreground)" }}>
+                  {value}
+                </div>
+                <div className="text-[12px] text-[var(--muted)] mt-0.5">{label}</div>
               </div>
-              <div className="text-xs text-gray-400">posts</div>
-            </div>
-            <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-3 text-center">
-              <div className="text-xl font-bold" style={{ color: user.accentColor }}>
-                {user._count.comments}
-              </div>
-              <div className="text-xs text-gray-400">comments</div>
-            </div>
-            <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-3 text-center">
-              <div className="text-xl font-bold" style={{ color: user.accentColor }}>
-                {user.badges.length}
-              </div>
-              <div className="text-xs text-gray-400">badges</div>
-            </div>
+            ))}
           </div>
 
-          {/* Badges — Discord-style role pills */}
+          {/* Badges */}
           {user.badges.length > 0 && (
-            <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-4 mb-6">
-              <h2 className="text-sm font-semibold mb-3 text-gray-300">Badges</h2>
+            <div className="surface p-4 mb-6">
+              <h2 className="text-[12px] font-semibold mb-3 text-[var(--muted)] uppercase tracking-wide">Badges</h2>
               <div className="flex flex-wrap gap-2">
                 {user.badges.map((b) => (
                   <span
@@ -201,10 +199,7 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
                   >
                     <span>{b.badge.icon}</span>
                     <span>{b.badge.name}</span>
-                    <span
-                      className="opacity-60 text-[10px] font-normal ml-0.5"
-                      style={{ color: b.badge.color }}
-                    >
+                    <span className="opacity-60 text-[10px] font-normal ml-0.5" style={{ color: b.badge.color }}>
                       {rarityLabel[b.badge.rarity] ?? b.badge.rarity}
                     </span>
                   </span>
@@ -214,35 +209,35 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
           )}
 
           {/* Posts */}
-          <h2 className="text-lg font-semibold mb-3">Posts</h2>
+          <h2 className="text-[12px] font-semibold mb-3 text-[var(--muted)] uppercase tracking-wide">Posts</h2>
           {user.posts.length === 0 ? (
-            <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6 text-center text-gray-400 mb-6">
+            <div className="surface p-6 text-center text-[var(--muted)] text-[14px] mb-6">
               no posts yet
             </div>
           ) : (
-            <div className="space-y-3 mb-8">
+            <div className="mb-8">
               {user.posts.map((p) => (
                 <Link
                   key={p.id}
                   href={`/p/${p.id}`}
-                  className="block bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-4 hover:bg-white/10 transition"
+                  className="block border-b border-[var(--border)] py-4 hover:bg-[var(--surface)]/30 transition-colors -mx-1 px-1"
                 >
-                  <div className="flex items-center gap-2 text-xs text-gray-400 mb-1">
+                  <div className="flex items-center gap-2 text-[12px] text-[var(--muted)] mb-1">
                     {p.community && (
                       <span
                         className="font-medium"
-                        style={{ color: p.community.themeColor || "#ec4899" }}
+                        style={{ color: p.community.themeColor || "var(--accent)" }}
                       >
                         c/{p.community.slug}
                       </span>
                     )}
                     <span>· {new Date(p.createdAt).toLocaleDateString()}</span>
                   </div>
-                  <h3 className="font-semibold">{p.title}</h3>
+                  <h3 className="font-semibold text-[15px] text-[var(--foreground)]">{p.title}</h3>
                   {p.content && (
-                    <p className="text-sm text-gray-300 line-clamp-2 mt-1">{p.content}</p>
+                    <p className="text-[13px] text-[var(--muted)] clamp-2 mt-1">{p.content}</p>
                   )}
-                  <div className="text-xs text-gray-500 mt-2">
+                  <div className="text-[12px] text-[var(--muted-2)] mt-2">
                     {p._count.votes} votes · {p._count.comments} comments
                   </div>
                 </Link>

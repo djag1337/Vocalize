@@ -81,7 +81,7 @@ export default function SettingsForm({ initial }: { initial: Initial }) {
     <form onSubmit={save} className="space-y-6">
       {/* Live preview */}
       <div
-        className="rounded-2xl border border-white/10 overflow-hidden"
+        className="rounded-2xl border border-[var(--border)] overflow-hidden"
         style={{ background: `linear-gradient(135deg, ${themeColor}33, ${accentColor}33)` }}
       >
         {/* Banner preview */}
@@ -125,19 +125,19 @@ export default function SettingsForm({ initial }: { initial: Initial }) {
                 </span>
               )}
             </div>
-            <div className="text-gray-300 text-sm">@{initial.username}</div>
-            {bio && <div className="text-sm text-gray-200 mt-1 max-w-md">{bio}</div>}
+            <div className="text-[var(--muted)] text-[13px]">@{initial.username}</div>
+            {bio && <div className="text-[13px] text-[var(--muted)] mt-1 max-w-md">{bio}</div>}
           </div>
         </div>
       </div>
 
       {/* Color picker */}
-      <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-5 space-y-4">
-        <label className="block text-sm font-medium">Colors</label>
+      <div className="surface p-5 space-y-4">
+        <label className="block text-[12px] font-semibold text-[var(--muted)] uppercase tracking-wide">Colors</label>
         <div className="grid grid-cols-2 gap-6">
           {/* Theme color */}
           <div className="space-y-2">
-            <div className="text-xs text-gray-400">Theme color</div>
+            <div className="text-xs text-[var(--muted)]">Theme color</div>
             {/* Large swatch */}
             <button
               type="button"
@@ -159,7 +159,7 @@ export default function SettingsForm({ initial }: { initial: Initial }) {
               type="text"
               value={themeColor}
               onChange={(e) => setThemeColor(e.target.value)}
-              className="w-full bg-black/40 border border-white/10 rounded-lg px-2 py-1.5 text-sm font-mono"
+              className="input text-sm font-mono"
               placeholder="#a855f7"
             />
             {/* Quick swatches */}
@@ -182,7 +182,7 @@ export default function SettingsForm({ initial }: { initial: Initial }) {
 
           {/* Accent color */}
           <div className="space-y-2">
-            <div className="text-xs text-gray-400">Accent color</div>
+            <div className="text-xs text-[var(--muted)]">Accent color</div>
             <button
               type="button"
               onClick={() => accentColorInputRef.current?.click()}
@@ -201,7 +201,7 @@ export default function SettingsForm({ initial }: { initial: Initial }) {
               type="text"
               value={accentColor}
               onChange={(e) => setAccentColor(e.target.value)}
-              className="w-full bg-black/40 border border-white/10 rounded-lg px-2 py-1.5 text-sm font-mono"
+              className="input text-sm font-mono"
               placeholder="#ec4899"
             />
             <div className="flex gap-1.5 flex-wrap">
@@ -230,72 +230,72 @@ export default function SettingsForm({ initial }: { initial: Initial }) {
       </div>
 
       {/* Profile fields */}
-      <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-5 space-y-4">
+      <div className="surface p-5 space-y-4">
         <div>
-          <label className="block text-xs text-gray-400 mb-1">Display name</label>
+          <label className="block text-xs text-[var(--muted)] mb-1.5">Display name</label>
           <input
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
             maxLength={50}
-            className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2"
+            className="input text-[14px]"
             placeholder={initial.username}
           />
         </div>
         <div>
-          <label className="block text-xs text-gray-400 mb-1">Bio</label>
+          <label className="block text-xs text-[var(--muted)] mb-1.5">Bio</label>
           <textarea
             value={bio}
             onChange={(e) => setBio(e.target.value)}
             maxLength={300}
             rows={3}
-            className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 resize-none"
+            className="input text-[14px] resize-none"
             placeholder="tell the world who you are..."
           />
-          <div className="text-xs text-gray-500 mt-1">{bio.length}/300</div>
+          <div className="text-xs text-[var(--muted-2)] mt-1">{bio.length}/300</div>
         </div>
         <div>
-          <label className="block text-xs text-gray-400 mb-1">Avatar URL</label>
+          <label className="block text-xs text-[var(--muted)] mb-1.5">Avatar URL</label>
           <input
             value={avatarUrl}
             onChange={(e) => setAvatarUrl(e.target.value)}
-            className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 font-mono text-sm"
+            className="input text-[14px] font-mono"
             placeholder="https://..."
           />
         </div>
         <div>
-          <label className="block text-xs text-gray-400 mb-1">Banner URL</label>
+          <label className="block text-xs text-[var(--muted)] mb-1.5">Banner URL</label>
           <input
             value={bannerUrl}
             onChange={(e) => setBannerUrl(e.target.value)}
-            className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 font-mono text-sm"
+            className="input text-[14px] font-mono"
             placeholder="https://... (leave empty for color gradient)"
           />
         </div>
         <div>
-          <label className="block text-xs text-gray-400 mb-1">Now Playing 🎵</label>
+          <label className="block text-xs text-[var(--muted)] mb-1.5">Now Playing</label>
           <input
             value={nowPlaying}
             onChange={(e) => setNowPlaying(e.target.value)}
             maxLength={200}
-            className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2"
+            className="input text-[14px]"
             placeholder="Artist — Song  or paste a Spotify URL"
           />
         </div>
       </div>
 
       {/* Feed density */}
-      <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-5">
-        <label className="block text-sm font-medium mb-3">Feed density</label>
+      <div className="surface p-5">
+        <label className="block text-[12px] font-semibold text-[var(--muted)] uppercase tracking-wide mb-3">Feed density</label>
         <div className="flex gap-2">
           {DENSITY_OPTIONS.map((opt) => (
             <button
               key={opt.value}
               type="button"
               onClick={() => setFeedDensity(opt.value)}
-              className={`flex-1 py-2 rounded-xl text-sm font-medium border transition ${
+              className={`flex-1 py-2 rounded-xl text-[13px] font-medium border transition ${
                 feedDensity === opt.value
-                  ? "border-pink-500 bg-pink-500/20 text-pink-300"
-                  : "border-white/10 hover:bg-white/10 text-gray-300"
+                  ? "border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--accent)]"
+                  : "border-[var(--border)] hover:bg-[var(--surface-2)] text-[var(--muted)]"
               }`}
             >
               {opt.label}
@@ -306,9 +306,9 @@ export default function SettingsForm({ initial }: { initial: Initial }) {
 
       {/* Display badge */}
       {initial.badges.length > 0 && (
-        <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-5">
-          <label className="block text-sm font-medium mb-3">Display badge</label>
-          <p className="text-xs text-gray-400 mb-3">
+        <div className="surface p-5">
+          <label className="block text-[12px] font-semibold text-[var(--muted)] uppercase tracking-wide mb-3">Display badge</label>
+          <p className="text-[12px] text-[var(--muted-2)] mb-3">
             Shown next to your name everywhere on the site.
           </p>
           <div className="flex flex-wrap gap-2">
@@ -357,11 +357,11 @@ export default function SettingsForm({ initial }: { initial: Initial }) {
         <button
           type="submit"
           disabled={saving}
-          className="px-6 py-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90 font-medium disabled:opacity-50"
+          className="btn-primary"
         >
-          {saving ? "saving..." : "save changes "}
+          {saving ? "Saving..." : "Save changes"}
         </button>
-        {msg && <span className="text-sm text-gray-300">{msg}</span>}
+        {msg && <span className="text-[13px] text-[var(--muted)]">{msg}</span>}
       </div>
     </form>
   );

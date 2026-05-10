@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import MarkAllRead from "./MarkAllRead";
+import AppShell from "@/components/AppShell";
 import { Bell, MessageCircle, AtSign, ChevronUp, Shield, Info } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -31,34 +32,29 @@ export default async function NotificationsPage() {
   const unreadCount = notifications.filter(n => !n.read).length;
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-purple-950 via-black to-pink-950 text-white">
-      <header className="border-b border-white/10 backdrop-blur sticky top-0 bg-black/40 z-10">
-        <div className="max-w-2xl mx-auto px-6 py-4 flex justify-between items-center">
-          <Link href="/feed" className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Vocalize</Link>
-          <Link href="/feed" className="text-sm text-gray-300 hover:text-white">← Feed</Link>
+    <AppShell username={session.user.name || ""}>
+      {/* Header */}
+      <header className="sticky top-0 z-10 bg-[var(--background)]/90 backdrop-blur border-b border-[var(--border)] px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <h1 className="font-bold text-[15px]">Notifications</h1>
+          {unreadCount > 0 && (
+            <span className="text-[11px] font-semibold px-1.5 py-0.5 rounded-full bg-[var(--accent)] text-white">
+              {unreadCount}
+            </span>
+          )}
         </div>
+        {unreadCount > 0 && <MarkAllRead />}
       </header>
 
-      <div className="max-w-2xl mx-auto px-6 py-6">
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center gap-3">
-            <Bell size={24} className="text-pink-400" strokeWidth={2} />
-            <div>
-              <h1 className="text-2xl font-bold">Notifications</h1>
-              <p className="text-gray-400 text-sm">{unreadCount > 0 ? `${unreadCount} unread` : "all caught up"}</p>
-            </div>
-          </div>
-          {unreadCount > 0 && <MarkAllRead />}
-        </div>
-
+      <div className="px-4 py-4">
         {notifications.length === 0 ? (
-          <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-8 text-center">
-            <Bell size={32} className="text-gray-500 mx-auto mb-2" strokeWidth={1.5} />
-            <p className="text-gray-300">nothing here yet</p>
-            <p className="text-gray-500 text-sm mt-2">replies, mentions, and mod actions will show up here</p>
+          <div className="surface p-10 text-center mt-4">
+            <Bell size={28} className="text-[var(--muted-2)] mx-auto mb-3" strokeWidth={1.5} />
+            <p className="text-[var(--muted)] text-[14px]">nothing here yet</p>
+            <p className="text-[var(--muted-2)] text-[12px] mt-1">replies, mentions, and mod actions will show up here</p>
           </div>
         ) : (
-          <ul className="space-y-2">
+          <ul>
             {notifications.map(n => {
               const href = n.postId ? `/p/${n.postId}` : "#";
               const Icon = ICON_MAP[n.type as keyof typeof ICON_MAP] || Bell;
@@ -66,31 +62,33 @@ export default async function NotificationsPage() {
                 <li key={n.id}>
                   <Link
                     href={href}
-                    className={`block rounded-2xl p-4 border transition ${
-                      n.read
-                        ? "bg-white/5 border-white/10 hover:border-white/20"
-                        : "bg-pink-500/10 border-pink-500/30 hover:border-pink-500/50"
+                    className={`flex items-start gap-3 py-4 border-b border-[var(--border)] transition-colors hover:bg-[var(--surface)]/30 ${
+                      !n.read ? "bg-[var(--accent-soft)]" : ""
                     }`}
                   >
-                    <div className="flex items-start gap-3">
-                      <div className="mt-0.5 p-2 rounded-full bg-white/5">
-                        <Icon size={18} strokeWidth={2} className="text-pink-400" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm">
-                          {n.actor && (
-                            <Link href={`/u/${n.actor.username}`} className="font-semibold hover:underline" style={{ color: n.actor.accentColor || "#ec4899" }}>
-                              @{n.actor.username}
-                            </Link>
-                          )}{" "}
-                          <span className="text-gray-300">{n.message}</span>
-                        </p>
-                        <p className="text-xs text-gray-500 mt-1">
-                          {new Date(n.createdAt).toLocaleString()}
-                        </p>
-                      </div>
-                      {!n.read && <span className="w-2 h-2 rounded-full bg-pink-400 mt-2 shrink-0" />}
+                    <div className="mt-0.5 p-1.5 rounded-full bg-[var(--surface-3)] shrink-0">
+                      <Icon size={16} strokeWidth={2} className="text-[var(--accent)]" />
                     </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[14px] leading-snug">
+                        {n.actor && (
+                          <Link
+                            href={`/u/${n.actor.username}`}
+                            className="font-semibold hover:underline"
+                            style={{ color: n.actor.accentColor || "var(--accent)" }}
+                          >
+                            @{n.actor.username}
+                          </Link>
+                        )}{" "}
+                        <span className="text-[var(--muted)]">{n.message}</span>
+                      </p>
+                      <p className="text-[12px] text-[var(--muted-2)] mt-1">
+                        {new Date(n.createdAt).toLocaleString()}
+                      </p>
+                    </div>
+                    {!n.read && (
+                      <span className="w-2 h-2 rounded-full bg-[var(--accent)] mt-2 shrink-0" />
+                    )}
                   </Link>
                 </li>
               );
@@ -98,6 +96,6 @@ export default async function NotificationsPage() {
           </ul>
         )}
       </div>
-    </main>
+    </AppShell>
   );
 }

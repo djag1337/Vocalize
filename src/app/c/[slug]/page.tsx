@@ -2,103 +2,152 @@ import { auth } from "@/lib/auth";
 import { redirect, notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import VoteButtons from "@/components/VoteButtons";
+import AppShell from "@/components/AppShell";
+import PostCard from "@/components/PostCard";
 import JoinButton from "./JoinButton";
 
 export const dynamic = "force-dynamic";
 
 export default async function CommunityPage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ sort?: string }> }) {
- const session = await auth();
- if (!session?.user) redirect("/login");
- const { slug } = await params;
- const { sort } = await searchParams;
- const sortMode = sort === "top" ? "top" : "new";
+  const session = await auth();
+  if (!session?.user) redirect("/login");
+  const { slug } = await params;
+  const { sort } = await searchParams;
+  const sortMode = sort === "top" ? "top" : "new";
 
- const community = await prisma.community.findUnique({
- where: { slug },
- include: {
- owner: { select: { id: true, username: true, displayName: true } },
- _count: { select: { posts: true, members: true } },
- },
- });
- if (!community) notFound();
+  const community = await prisma.community.findUnique({
+    where: { slug },
+    include: {
+      owner: { select: { id: true, username: true, displayName: true } },
+      _count: { select: { posts: true, members: true } },
+    },
+  });
+  if (!community) notFound();
 
- const userId = session.user.id!;
- const membership = await prisma.communityMember.findUnique({
- where: { userId_communityId: { userId, communityId: community.id } },
- });
+  const userId = session.user.id!;
+  const membership = await prisma.communityMember.findUnique({
+    where: { userId_communityId: { userId, communityId: community.id } },
+  });
 
- const posts = await prisma.post.findMany({
- where: { communityId: community.id },
- orderBy: sortMode === "top" ? { votes: { _count: "desc" } } : { createdAt: "desc" },
- take: 50,
- include: {
- author: { select: { username: true, displayName: true, accentColor: true } },
- _count: { select: { comments: true } },
- votes: { select: { value: true, userId: true } },
- },
- });
+  const posts = await prisma.post.findMany({
+    where: { communityId: community.id, removed: false },
+    orderBy: sortMode === "top" ? { votes: { _count: "desc" } } : { createdAt: "desc" },
+    take: 50,
+    include: {
+      author: {
+        select: {
+          id: true,
+          username: true,
+          displayName: true,
+          accentColor: true,
+          displayBadge: { select: { name: true, icon: true, color: true } },
+        },
+      },
+      community: { select: { slug: true, name: true, themeColor: true } },
+      flair: { select: { name: true, color: true } },
+      _count: { select: { comments: true } },
+      votes: { select: { value: true, userId: true } },
+      saves: { where: { userId }, select: { id: true } },
+      reactions: { select: { emoji: true, userId: true } },
+    },
+  });
 
- const shaped = posts.map(p => ({
- ...p,
- score: p.votes.reduce((s, v) => s + v.value, 0),
- myVote: p.votes.find(v => v.userId === userId)?.value ?? 0,
- }));
+  const shaped = posts.map(p => ({
+    id: p.id,
+    title: p.title,
+    content: p.content,
+    createdAt: p.createdAt,
+    pinned: p.pinned,
+    locked: p.locked,
+    author: p.author,
+    community: p.community,
+    flair: p.flair,
+    score: p.votes.reduce((s, v) => s + v.value, 0),
+    myVote: p.votes.find(v => v.userId === userId)?.value ?? 0,
+    commentCount: p._count.comments,
+    saved: p.saves.length > 0,
+    reactions: p.reactions,
+  }));
 
- const accent = community.themeColor || "#ec4899";
+  const accent = community.themeColor || "var(--accent)";
 
- return (
- <main className="min-h-screen bg-gradient-to-br from-purple-950 via-black to-pink-950 text-white">
- <header className="border-b border-white/10 backdrop-blur sticky top-0 bg-black/40 z-10">
- <div className="max-w-2xl mx-auto px-6 py-4 flex justify-between items-center">
- <Link href="/feed" className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Vocalize</Link>
- <div className="flex items-center gap-3 text-sm">
- <Link href="/c" className="px-3 py-1 rounded-full border border-white/20 hover:bg-white/10 text-xs">All communities</Link>
- <Link href={`/submit?c=${community.slug}`} className="px-3 py-1 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90 text-xs font-medium">+ Post</Link>
- </div>
- </div>
- </header>
+  return (
+    <AppShell username={session.user.name || ""}>
+      {/* Header */}
+      <header className="sticky top-0 z-10 bg-[var(--background)]/90 backdrop-blur border-b border-[var(--border)] px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Link
+            href="/feed"
+            className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-[var(--surface-2)] transition-colors text-[var(--muted)] hover:text-[var(--foreground)]"
+          >
+            ←
+          </Link>
+          <span className="font-semibold text-[15px]" style={{ color: accent }}>
+            c/{community.slug}
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          <Link href="/c" className="btn-ghost text-xs py-1.5 px-3">Communities</Link>
+          <Link
+            href={`/submit?c=${community.slug}`}
+            className="pill pill-primary text-xs"
+          >
+            + Post
+          </Link>
+        </div>
+      </header>
 
- <div className="max-w-2xl mx-auto px-6 py-6 space-y-4">
- <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6" style={{ borderTopColor: accent, borderTopWidth: 4 }}>
- <div className="flex items-start justify-between gap-4">
- <div className="flex-1 min-w-0">
- <h1 className="text-2xl font-bold" style={{ color: accent }}>c/{community.slug}</h1>
- <p className="text-gray-300 text-sm mt-1">{community.name}</p>
- {community.description && <p className="text-gray-400 text-sm mt-2">{community.description}</p>}
- <p className="text-xs text-gray-500 mt-3">
- {community._count.members} members · {community._count.posts} posts · owned by @{community.owner.username}
- </p>
- </div>
- <JoinButton slug={community.slug} initiallyJoined={!!membership} accent={accent} />
- </div>
- </div>
+      {/* Community info */}
+      <div className="px-4 py-5 border-b border-[var(--border)]">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-xl font-bold" style={{ color: accent }}>
+              c/{community.slug}
+            </h1>
+            <p className="text-[var(--muted)] text-[14px] mt-0.5">{community.name}</p>
+            {community.description && (
+              <p className="text-[var(--muted)] text-[13px] mt-2">{community.description}</p>
+            )}
+            <p className="text-[12px] text-[var(--muted-2)] mt-2">
+              {community._count.members} members · {community._count.posts} posts · owned by @{community.owner.username}
+            </p>
+          </div>
+          <JoinButton slug={community.slug} initiallyJoined={!!membership} accent={accent} />
+        </div>
+      </div>
 
- <div className="flex gap-2 text-sm">
- <Link href={`/c/${community.slug}?sort=new`} className={`px-3 py-1 rounded-full border ${sortMode === "new" ? "bg-white/10 border-white/30" : "border-white/10 hover:bg-white/5"}`}>New</Link>
- <Link href={`/c/${community.slug}?sort=top`} className={`px-3 py-1 rounded-full border ${sortMode === "top" ? "bg-white/10 border-white/30" : "border-white/10 hover:bg-white/5"}`}>Top</Link>
- </div>
+      {/* Sort tabs */}
+      <div className="flex border-b border-[var(--border)]">
+        {(["new", "top"] as const).map(mode => (
+          <Link
+            key={mode}
+            href={`/c/${community.slug}?sort=${mode}`}
+            className={`flex-1 text-center py-3 text-[13px] border-b-2 transition ${
+              sortMode === mode
+                ? "border-[var(--accent)] text-[var(--foreground)] font-semibold"
+                : "border-transparent text-[var(--muted)] hover:bg-[var(--surface)]"
+            }`}
+          >
+            {mode.charAt(0).toUpperCase() + mode.slice(1)}
+          </Link>
+        ))}
+      </div>
 
- {shaped.length === 0 ? (
- <div className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-8 text-center">
- <p className="text-gray-300">no posts here yet </p>
- <Link href={`/submit?c=${community.slug}`} className="inline-block mt-3 text-pink-400 hover:underline">be the first →</Link>
- </div>
- ) : (
- <div className="space-y-3">
- {shaped.map(p => (
- <div key={p.id} className="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-5 flex gap-3">
- <VoteButtons postId={p.id} initialScore={p.score} initialVote={p.myVote} />
- <Link href={`/p/${p.id}`} className="flex-1 min-w-0">
- <h2 className="font-semibold truncate">{p.title}</h2>
- <p className="text-sm text-gray-300 line-clamp-2 mt-1">{p.content}</p>
- <p className="text-xs text-gray-500 mt-2">@{p.author.username} · {p._count.comments}</p>
- </Link>
- </div>
- ))}
- </div>
- )}
- </div>
- </main>
- );
+      {/* Posts */}
+      {shaped.length === 0 ? (
+        <div className="p-10 text-center">
+          <p className="text-[var(--muted)] text-[14px] mb-2">no posts here yet</p>
+          <Link href={`/submit?c=${community.slug}`} className="text-[var(--accent)] hover:underline text-[13px]">
+            be the first →
+          </Link>
+        </div>
+      ) : (
+        <div>
+          {shaped.map(p => (
+            <PostCard key={p.id} post={p} myUserId={userId} />
+          ))}
+        </div>
+      )}
+    </AppShell>
+  );
 }
