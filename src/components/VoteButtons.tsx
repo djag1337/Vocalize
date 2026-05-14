@@ -1,15 +1,15 @@
 "use client";
 import { useState } from "react";
-import { ArrowBigUp, ArrowBigDown } from "lucide-react";
+import { Heart } from "lucide-react";
 
 export default function VoteButtons({ postId, initialScore, initialVote }: { postId: string; initialScore: number; initialVote: number }) {
   const [score, setScore] = useState(initialScore);
   const [vote, setVote] = useState(initialVote);
   const [busy, setBusy] = useState(false);
 
-  async function cast(v: number) {
+  async function toggleLike() {
     if (busy) return;
-    const newVote = vote === v ? 0 : v;
+    const newVote = vote === 1 ? 0 : 1;
     const prevScore = score;
     const prevVote = vote;
     setVote(newVote);
@@ -32,33 +32,17 @@ export default function VoteButtons({ postId, initialScore, initialVote }: { pos
     }
   }
 
+  const liked = vote === 1;
+
   return (
-    <div className="flex items-center gap-1 select-none">
-      <button
-        onClick={() => cast(1)}
-        aria-label="upvote"
-        className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full hover:bg-[var(--surface-3)] transition-colors ${
-          vote === 1 ? "text-[var(--accent)]" : "text-[var(--muted)] hover:text-[var(--foreground)]"
-        }`}
-      >
-        <ArrowBigUp size={20} strokeWidth={1.8} fill={vote === 1 ? "currentColor" : "none"} />
-      </button>
-      <span
-        className={`text-[14px] font-semibold min-w-[20px] text-center ${
-          vote === 1 ? "text-[var(--accent)]" : vote === -1 ? "text-purple-400" : "text-[var(--foreground)]"
-        }`}
-      >
-        {score}
-      </span>
-      <button
-        onClick={() => cast(-1)}
-        aria-label="downvote"
-        className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full hover:bg-[var(--surface-3)] transition-colors ${
-          vote === -1 ? "text-purple-400" : "text-[var(--muted)] hover:text-[var(--foreground)]"
-        }`}
-      >
-        <ArrowBigDown size={20} strokeWidth={1.8} fill={vote === -1 ? "currentColor" : "none"} />
-      </button>
-    </div>
+    <button
+      onClick={toggleLike}
+      className={`flex items-center gap-1.5 py-1 transition-colors ${
+        liked ? "text-[var(--red)]" : "text-[var(--muted)] hover:text-[var(--red)]"
+      }`}
+    >
+      <Heart size={20} strokeWidth={1.6} fill={liked ? "currentColor" : "none"} />
+      {score > 0 && <span className="text-[14px] font-medium">{score}</span>}
+    </button>
   );
 }

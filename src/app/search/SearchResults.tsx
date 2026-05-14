@@ -28,36 +28,82 @@ export default async function SearchResults({ query }: { query: string }) {
   ]);
 
   const noResults = posts.length === 0 && communities.length === 0 && users.length === 0;
+
   if (noResults) {
     return (
-      <div className="p-8 text-center">
-        <p className="text-[var(--muted)] text-[14px]">No results for &quot;{query}&quot;</p>
+      <div style={{ padding: "60px 0", textAlign: "center" }}>
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: "16px" }}>
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="var(--muted)"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{ opacity: 0.4 }}
+          >
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+        </div>
+        <p
+          className="font-semibold"
+          style={{ marginBottom: "6px", fontSize: 17, color: "var(--foreground)" }}
+        >
+          No results for &ldquo;{query}&rdquo;
+        </p>
+        <p style={{ fontSize: 14, color: "var(--muted)" }}>
+          Try different keywords or check the spelling
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div style={{ display: "flex", flexDirection: "column", gap: "32px", paddingTop: "20px" }}>
       {communities.length > 0 && (
         <section>
-          <h2 className="text-[11px] font-semibold text-[var(--muted)] uppercase tracking-wider mb-3">
-            Communities
+          <h2
+            className="font-semibold uppercase tracking-[0.08em]"
+            style={{ marginBottom: "12px", fontSize: 11, color: "var(--muted)" }}
+          >
+            Spaces
           </h2>
-          <div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             {communities.map(c => (
               <Link
                 key={c.id}
                 href={`/c/${c.slug}`}
-                className="block border-b border-[var(--border)] py-3 hover:bg-[var(--surface)]/30 transition-colors"
+                className="hover:opacity-90 transition-opacity"
+                style={{
+                  display: "block",
+                  padding: "18px 20px",
+                  textDecoration: "none",
+                  background: "var(--surface-3)",
+                  borderRadius: 24,
+                  boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
+                }}
               >
-                <div className="font-semibold text-[15px]" style={{ color: c.themeColor || "var(--accent)" }}>
-                  c/{c.slug}
+                <div
+                  className="font-bold"
+                  style={{ fontSize: 17, color: c.themeColor || "var(--accent)" }}
+                >
+                  s/{c.slug}
                 </div>
-                <div className="text-[13px] text-[var(--muted)]">{c.name}</div>
+                <div style={{ fontSize: 15, color: "var(--muted)", marginTop: "2px" }}>
+                  {c.name}
+                </div>
                 {c.description && (
-                  <p className="text-[12px] text-[var(--muted-2)] mt-0.5 clamp-2">{c.description}</p>
+                  <p
+                    className="clamp-2"
+                    style={{ marginTop: "6px", fontSize: 13, color: "var(--muted)" }}
+                  >
+                    {c.description}
+                  </p>
                 )}
-                <div className="text-[12px] text-[var(--muted-2)] mt-1">
+                <div style={{ marginTop: "8px", fontSize: 13, color: "var(--muted)" }}>
                   {c._count.members} members · {c._count.posts} posts
                 </div>
               </Link>
@@ -68,25 +114,65 @@ export default async function SearchResults({ query }: { query: string }) {
 
       {users.length > 0 && (
         <section>
-          <h2 className="text-[11px] font-semibold text-[var(--muted)] uppercase tracking-wider mb-3">
+          <h2
+            className="font-semibold uppercase tracking-[0.08em]"
+            style={{ marginBottom: "12px", fontSize: 11, color: "var(--muted)" }}
+          >
             Users
           </h2>
-          <div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             {users.map(u => (
               <Link
                 key={u.id}
                 href={`/u/${u.username}`}
-                className="block border-b border-[var(--border)] py-3 hover:bg-[var(--surface)]/30 transition-colors"
+                className="hover:opacity-90 transition-opacity"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  padding: "14px 20px",
+                  gap: "12px",
+                  textDecoration: "none",
+                  background: "var(--surface-3)",
+                  borderRadius: 24,
+                  boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
+                }}
               >
-                <div className="font-semibold text-[14px]" style={{ color: u.accentColor || "var(--accent-2)" }}>
-                  @{u.username}
+                {/* Avatar circle with initials */}
+                <div
+                  className="font-bold"
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    minWidth: "40px",
+                    borderRadius: 9999,
+                    background: u.accentColor
+                      ? `linear-gradient(135deg, ${u.accentColor}88, ${u.accentColor})`
+                      : "linear-gradient(135deg, var(--accent-2), var(--accent))",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "15px",
+                    color: "white",
+                  }}
+                >
+                  {(u.displayName || u.username)[0]?.toUpperCase()}
                 </div>
-                {u.displayName && (
-                  <div className="text-[13px] text-[var(--muted)]">{u.displayName}</div>
-                )}
-                {u.bio && (
-                  <p className="text-[12px] text-[var(--muted-2)] mt-0.5 clamp-2">{u.bio}</p>
-                )}
+                <div style={{ minWidth: 0 }}>
+                  <div className="font-semibold" style={{ fontSize: 17, color: "var(--foreground)" }}>
+                    {u.displayName || u.username}
+                  </div>
+                  <div style={{ fontSize: 15, color: "var(--muted)", marginTop: "2px" }}>
+                    @{u.username}
+                  </div>
+                  {u.bio && (
+                    <p
+                      className="clamp-2"
+                      style={{ marginTop: "4px", fontSize: 13, color: "var(--muted)" }}
+                    >
+                      {u.bio}
+                    </p>
+                  )}
+                </div>
               </Link>
             ))}
           </div>
@@ -95,31 +181,65 @@ export default async function SearchResults({ query }: { query: string }) {
 
       {posts.length > 0 && (
         <section>
-          <h2 className="text-[11px] font-semibold text-[var(--muted)] uppercase tracking-wider mb-3">
+          <h2
+            className="font-semibold uppercase tracking-[0.08em]"
+            style={{ marginBottom: "12px", fontSize: 11, color: "var(--muted)" }}
+          >
             Posts
           </h2>
-          <div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             {posts.map(p => (
               <Link
                 key={p.id}
                 href={`/p/${p.id}`}
-                className="block border-b border-[var(--border)] py-3 hover:bg-[var(--surface)]/30 transition-colors"
+                className="hover:opacity-90 transition-opacity"
+                style={{
+                  display: "block",
+                  padding: "18px 20px",
+                  textDecoration: "none",
+                  background: "var(--surface-3)",
+                  borderRadius: 24,
+                  boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
+                }}
               >
-                <div className="flex items-center gap-1.5 text-[12px] text-[var(--muted)] mb-1">
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    marginBottom: "6px",
+                    fontSize: 13,
+                  }}
+                >
                   {p.community && (
-                    <span className="font-semibold" style={{ color: p.community.themeColor || "var(--accent)" }}>
-                      c/{p.community.slug}
+                    <span
+                      className="font-semibold"
+                      style={{ color: p.community.themeColor || "var(--accent)" }}
+                    >
+                      s/{p.community.slug}
                     </span>
                   )}
-                  <span>·</span>
-                  <span style={{ color: p.author.accentColor || "var(--accent-2)" }}>
+                  {p.community && <span style={{ color: "var(--muted)" }}>·</span>}
+                  <span style={{ color: p.author.accentColor || "var(--accent)" }}>
                     @{p.author.username}
                   </span>
                 </div>
-                <h3 className="font-semibold text-[15px] text-[var(--foreground)]">{p.title}</h3>
-                <p className="text-[13px] text-[var(--muted)] clamp-2 mt-0.5">{p.content}</p>
-                <div className="text-[12px] text-[var(--muted-2)] mt-1">
-                  {p._count.votes} votes · {p._count.comments} comments
+                <h3
+                  className="font-semibold"
+                  style={{ fontSize: 17, color: "var(--foreground)", lineHeight: "22px" }}
+                >
+                  {p.title}
+                </h3>
+                {p.content && (
+                  <p
+                    className="clamp-2"
+                    style={{ marginTop: "4px", lineHeight: "22px", fontSize: 15, color: "var(--muted)" }}
+                  >
+                    {p.content}
+                  </p>
+                )}
+                <div style={{ marginTop: "10px", fontSize: 13, color: "var(--muted)" }}>
+                  {p._count.votes} likes · {p._count.comments} comments
                 </div>
               </Link>
             ))}

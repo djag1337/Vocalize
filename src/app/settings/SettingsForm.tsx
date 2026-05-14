@@ -30,6 +30,45 @@ const DENSITY_OPTIONS: { value: string; label: string }[] = [
 const THEME_SWATCHES = ["#a855f7", "#3b82f6", "#10b981", "#f97316", "#ef4444", "#eab308"];
 const ACCENT_SWATCHES = ["#ec4899", "#06b6d4", "#84cc16", "#f59e0b", "#6366f1", "#14b8a6"];
 
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <p
+      className="font-semibold uppercase tracking-widest"
+      style={{ marginBottom: 16, fontSize: 12, color: "var(--muted)" }}
+    >
+      {children}
+    </p>
+  );
+}
+
+function FieldLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <label
+      className="block"
+      style={{ marginBottom: 6, fontSize: 13, color: "var(--muted)" }}
+    >
+      {children}
+    </label>
+  );
+}
+
+function Card({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
+  return (
+    <div
+      className="flex flex-col"
+      style={{
+        borderRadius: 24,
+        padding: "24px 24px",
+        background: "var(--surface-3)",
+        boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
+        ...style,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
 export default function SettingsForm({ initial }: { initial: Initial }) {
   const router = useRouter();
   const [displayName, setDisplayName] = useState(initial.displayName ?? "");
@@ -70,51 +109,62 @@ export default function SettingsForm({ initial }: { initial: Initial }) {
     });
     setSaving(false);
     if (res.ok) {
-      setMsg("saved ");
+      setMsg("Saved ✓");
       router.refresh();
     } else {
-      setMsg("something broke ");
+      setMsg("Something went wrong");
     }
   }
 
   return (
-    <form onSubmit={save} className="space-y-6">
-      {/* Live preview */}
-      <div
-        className="rounded-2xl border border-[var(--border)] overflow-hidden"
-        style={{ background: `linear-gradient(135deg, ${themeColor}33, ${accentColor}33)` }}
-      >
-        {/* Banner preview */}
+    <form onSubmit={save} className="flex flex-col" style={{ gap: 16 }}>
+
+      {/* ── Profile preview ── */}
+      <Card style={{ padding: 0, overflow: "hidden" }}>
         {bannerUrl ? (
-          <div className="h-24 w-full relative">
-            <img src={bannerUrl} alt="banner preview" className="w-full h-full object-cover" />
+          <div style={{ height: 96 }} className="w-full">
+            <img src={bannerUrl} alt="banner" className="w-full" style={{ height: "100%", objectFit: "cover" }} />
           </div>
         ) : (
           <div
-            className="h-24 w-full"
-            style={{ background: `linear-gradient(135deg, ${themeColor}, ${accentColor})` }}
+            className="w-full"
+            style={{ height: 96, background: `linear-gradient(135deg, ${themeColor}, ${accentColor})` }}
           />
         )}
-        <div className="p-4 pt-3 flex items-center gap-4">
+        <div className="flex items-center" style={{ padding: "16px 24px 20px 24px", gap: 16 }}>
           <div
-            className="w-16 h-16 rounded-full border-2 flex items-center justify-center text-2xl font-bold overflow-hidden shrink-0"
-            style={{ borderColor: accentColor, background: themeColor }}
+            className="flex items-center justify-center font-bold overflow-hidden shrink-0"
+            style={{
+              width: 64,
+              height: 64,
+              borderRadius: 9999,
+              borderWidth: 2,
+              borderStyle: "solid",
+              borderColor: accentColor,
+              background: themeColor,
+              color: "white",
+              fontSize: 22,
+            }}
           >
             {avatarUrl ? (
-              <img src={avatarUrl} alt="" className="w-full h-full object-cover" />
+              <img src={avatarUrl} alt="" className="w-full" style={{ height: "100%", objectFit: "cover" }} />
             ) : (
               (displayName || initial.username)[0]?.toUpperCase()
             )}
           </div>
           <div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <div className="font-bold text-lg" style={{ color: accentColor }}>
+            <div className="flex items-center flex-wrap" style={{ gap: 8 }}>
+              <span className="font-bold" style={{ fontSize: 17, color: "var(--foreground)" }}>
                 {displayName || initial.username}
-              </div>
+              </span>
               {selectedBadge && (
                 <span
-                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold border"
+                  className="inline-flex items-center font-semibold border"
                   style={{
+                    gap: 4,
+                    padding: "2px 8px",
+                    borderRadius: 9999,
+                    fontSize: 12,
                     background: `${selectedBadge.color}33`,
                     borderColor: `${selectedBadge.color}66`,
                     color: selectedBadge.color,
@@ -125,52 +175,121 @@ export default function SettingsForm({ initial }: { initial: Initial }) {
                 </span>
               )}
             </div>
-            <div className="text-[var(--muted)] text-[13px]">@{initial.username}</div>
-            {bio && <div className="text-[13px] text-[var(--muted)] mt-1 max-w-md">{bio}</div>}
+            <div style={{ fontSize: 14, color: "var(--muted)" }}>@{initial.username}</div>
+            {bio && <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 4 }}>{bio}</div>}
           </div>
         </div>
-      </div>
+      </Card>
 
-      {/* Color picker */}
-      <div className="surface p-5 space-y-4">
-        <label className="block text-[12px] font-semibold text-[var(--muted)] uppercase tracking-wide">Colors</label>
-        <div className="grid grid-cols-2 gap-6">
+      {/* ── Profile fields ── */}
+      <Card>
+        <SectionLabel>Profile</SectionLabel>
+        <div className="flex flex-col" style={{ gap: 16 }}>
+          <div>
+            <FieldLabel>Display name</FieldLabel>
+            <input
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              maxLength={50}
+              className="input w-full"
+              style={{ fontSize: 15 }}
+              placeholder={initial.username}
+            />
+          </div>
+          <div>
+            <FieldLabel>Bio</FieldLabel>
+            <textarea
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+              maxLength={300}
+              rows={3}
+              className="input resize-none w-full"
+              style={{ fontSize: 15 }}
+              placeholder="tell the world who you are..."
+            />
+            <span style={{ display: "block", marginTop: 4, fontSize: 12, color: "var(--muted)" }}>
+              {bio.length}/300
+            </span>
+          </div>
+          <div>
+            <FieldLabel>Avatar URL</FieldLabel>
+            <input
+              value={avatarUrl}
+              onChange={(e) => setAvatarUrl(e.target.value)}
+              className="input font-mono w-full"
+              style={{ fontSize: 14 }}
+              placeholder="https://..."
+            />
+          </div>
+          <div>
+            <FieldLabel>Banner URL</FieldLabel>
+            <input
+              value={bannerUrl}
+              onChange={(e) => setBannerUrl(e.target.value)}
+              className="input font-mono w-full"
+              style={{ fontSize: 14 }}
+              placeholder="https://... (leave empty for color gradient)"
+            />
+          </div>
+          <div>
+            <FieldLabel>Now Playing</FieldLabel>
+            <input
+              value={nowPlaying}
+              onChange={(e) => setNowPlaying(e.target.value)}
+              maxLength={200}
+              className="input w-full"
+              style={{ fontSize: 15 }}
+              placeholder="Artist — Song  or paste a Spotify URL"
+            />
+          </div>
+        </div>
+      </Card>
+
+      {/* ── Colors ── */}
+      <Card>
+        <SectionLabel>Colors</SectionLabel>
+        <div
+          className="grid"
+          style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 24 }}
+        >
           {/* Theme color */}
-          <div className="space-y-2">
-            <div className="text-xs text-[var(--muted)]">Theme color</div>
-            {/* Large swatch */}
+          <div className="flex flex-col" style={{ gap: 10 }}>
+            <span style={{ fontSize: 13, color: "var(--muted)" }}>Theme color</span>
             <button
               type="button"
               onClick={() => themeColorInputRef.current?.click()}
-              className="w-20 h-20 rounded-xl border-2 border-white/20 hover:border-white/50 transition cursor-pointer shrink-0"
-              style={{ background: `linear-gradient(135deg, ${themeColor}, ${themeColor}99)` }}
+              className="transition cursor-pointer"
+              style={{
+                width: 72,
+                height: 72,
+                borderRadius: 16,
+                border: "2px solid rgba(255,255,255,0.2)",
+                background: `linear-gradient(135deg, ${themeColor}, ${themeColor}99)`,
+              }}
               aria-label="Pick theme color"
             />
-            {/* Hidden native color input */}
-            <input
-              ref={themeColorInputRef}
-              type="color"
-              value={themeColor}
-              onChange={(e) => setThemeColor(e.target.value)}
-              className="sr-only"
-            />
-            {/* Hex text input */}
+            <input ref={themeColorInputRef} type="color" value={themeColor} onChange={(e) => setThemeColor(e.target.value)} className="sr-only" />
             <input
               type="text"
               value={themeColor}
               onChange={(e) => setThemeColor(e.target.value)}
-              className="input text-sm font-mono"
+              className="input font-mono"
+              style={{ fontSize: 13 }}
               placeholder="#a855f7"
             />
-            {/* Quick swatches */}
-            <div className="flex gap-1.5 flex-wrap">
+            <div className="flex flex-wrap" style={{ gap: 6 }}>
               {THEME_SWATCHES.map((c) => (
                 <button
                   key={c}
                   type="button"
                   onClick={() => setThemeColor(c)}
-                  className="w-6 h-6 rounded-full border-2 transition hover:scale-110"
+                  className="transition hover:scale-110"
                   style={{
+                    width: 24,
+                    height: 24,
+                    borderRadius: 9999,
+                    borderWidth: 2,
+                    borderStyle: "solid",
                     background: c,
                     borderColor: themeColor === c ? "white" : "transparent",
                   }}
@@ -181,37 +300,43 @@ export default function SettingsForm({ initial }: { initial: Initial }) {
           </div>
 
           {/* Accent color */}
-          <div className="space-y-2">
-            <div className="text-xs text-[var(--muted)]">Accent color</div>
+          <div className="flex flex-col" style={{ gap: 10 }}>
+            <span style={{ fontSize: 13, color: "var(--muted)" }}>Accent color</span>
             <button
               type="button"
               onClick={() => accentColorInputRef.current?.click()}
-              className="w-20 h-20 rounded-xl border-2 border-white/20 hover:border-white/50 transition cursor-pointer shrink-0"
-              style={{ background: `linear-gradient(135deg, ${accentColor}, ${accentColor}99)` }}
+              className="transition cursor-pointer"
+              style={{
+                width: 72,
+                height: 72,
+                borderRadius: 16,
+                border: "2px solid rgba(255,255,255,0.2)",
+                background: `linear-gradient(135deg, ${accentColor}, ${accentColor}99)`,
+              }}
               aria-label="Pick accent color"
             />
-            <input
-              ref={accentColorInputRef}
-              type="color"
-              value={accentColor}
-              onChange={(e) => setAccentColor(e.target.value)}
-              className="sr-only"
-            />
+            <input ref={accentColorInputRef} type="color" value={accentColor} onChange={(e) => setAccentColor(e.target.value)} className="sr-only" />
             <input
               type="text"
               value={accentColor}
               onChange={(e) => setAccentColor(e.target.value)}
-              className="input text-sm font-mono"
+              className="input font-mono"
+              style={{ fontSize: 13 }}
               placeholder="#ec4899"
             />
-            <div className="flex gap-1.5 flex-wrap">
+            <div className="flex flex-wrap" style={{ gap: 6 }}>
               {ACCENT_SWATCHES.map((c) => (
                 <button
                   key={c}
                   type="button"
                   onClick={() => setAccentColor(c)}
-                  className="w-6 h-6 rounded-full border-2 transition hover:scale-110"
+                  className="transition hover:scale-110"
                   style={{
+                    width: 24,
+                    height: 24,
+                    borderRadius: 9999,
+                    borderWidth: 2,
+                    borderStyle: "solid",
                     background: c,
                     borderColor: accentColor === c ? "white" : "transparent",
                   }}
@@ -222,105 +347,64 @@ export default function SettingsForm({ initial }: { initial: Initial }) {
           </div>
         </div>
 
-        {/* Live gradient preview strip */}
+        {/* Gradient preview */}
         <div
-          className="h-8 w-full rounded-xl border border-white/10"
-          style={{ background: `linear-gradient(135deg, ${themeColor}, ${accentColor})` }}
+          style={{
+            height: 32,
+            marginTop: 20,
+            borderRadius: 14,
+            border: "1px solid rgba(255,255,255,0.1)",
+            background: `linear-gradient(135deg, ${themeColor}, ${accentColor})`,
+          }}
         />
-      </div>
+      </Card>
 
-      {/* Profile fields */}
-      <div className="surface p-5 space-y-4">
-        <div>
-          <label className="block text-xs text-[var(--muted)] mb-1.5">Display name</label>
-          <input
-            value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
-            maxLength={50}
-            className="input text-[14px]"
-            placeholder={initial.username}
-          />
-        </div>
-        <div>
-          <label className="block text-xs text-[var(--muted)] mb-1.5">Bio</label>
-          <textarea
-            value={bio}
-            onChange={(e) => setBio(e.target.value)}
-            maxLength={300}
-            rows={3}
-            className="input text-[14px] resize-none"
-            placeholder="tell the world who you are..."
-          />
-          <div className="text-xs text-[var(--muted-2)] mt-1">{bio.length}/300</div>
-        </div>
-        <div>
-          <label className="block text-xs text-[var(--muted)] mb-1.5">Avatar URL</label>
-          <input
-            value={avatarUrl}
-            onChange={(e) => setAvatarUrl(e.target.value)}
-            className="input text-[14px] font-mono"
-            placeholder="https://..."
-          />
-        </div>
-        <div>
-          <label className="block text-xs text-[var(--muted)] mb-1.5">Banner URL</label>
-          <input
-            value={bannerUrl}
-            onChange={(e) => setBannerUrl(e.target.value)}
-            className="input text-[14px] font-mono"
-            placeholder="https://... (leave empty for color gradient)"
-          />
-        </div>
-        <div>
-          <label className="block text-xs text-[var(--muted)] mb-1.5">Now Playing</label>
-          <input
-            value={nowPlaying}
-            onChange={(e) => setNowPlaying(e.target.value)}
-            maxLength={200}
-            className="input text-[14px]"
-            placeholder="Artist — Song  or paste a Spotify URL"
-          />
-        </div>
-      </div>
-
-      {/* Feed density */}
-      <div className="surface p-5">
-        <label className="block text-[12px] font-semibold text-[var(--muted)] uppercase tracking-wide mb-3">Feed density</label>
-        <div className="flex gap-2">
+      {/* ── Feed density ── */}
+      <Card>
+        <SectionLabel>Feed density</SectionLabel>
+        <div className="flex" style={{ gap: 8 }}>
           {DENSITY_OPTIONS.map((opt) => (
             <button
               key={opt.value}
               type="button"
               onClick={() => setFeedDensity(opt.value)}
-              className={`flex-1 py-2 rounded-xl text-[13px] font-medium border transition ${
-                feedDensity === opt.value
-                  ? "border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--accent)]"
-                  : "border-[var(--border)] hover:bg-[var(--surface-2)] text-[var(--muted)]"
-              }`}
+              className="flex-1 font-medium border transition"
+              style={{
+                height: 40,
+                fontSize: 14,
+                borderRadius: 9999,
+                borderColor: feedDensity === opt.value ? "var(--accent)" : "var(--border)",
+                background: feedDensity === opt.value ? "var(--accent-soft)" : "transparent",
+                color: feedDensity === opt.value ? "var(--accent)" : "var(--muted)",
+              }}
             >
               {opt.label}
             </button>
           ))}
         </div>
-      </div>
+      </Card>
 
-      {/* Display badge */}
+      {/* ── Display badge ── */}
       {initial.badges.length > 0 && (
-        <div className="surface p-5">
-          <label className="block text-[12px] font-semibold text-[var(--muted)] uppercase tracking-wide mb-3">Display badge</label>
-          <p className="text-[12px] text-[var(--muted-2)] mb-3">
+        <Card>
+          <SectionLabel>Display badge</SectionLabel>
+          <p style={{ marginBottom: 14, fontSize: 13, color: "var(--muted)" }}>
             Shown next to your name everywhere on the site.
           </p>
-          <div className="flex flex-wrap gap-2">
-            {/* None option */}
+          <div className="flex flex-wrap" style={{ gap: 8 }}>
             <button
               type="button"
               onClick={() => setDisplayBadgeId("")}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition ${
-                displayBadgeId === ""
-                  ? "border-white/50 bg-white/20 text-white"
-                  : "border-white/20 hover:bg-white/10 text-gray-400"
-              }`}
+              className="inline-flex items-center font-semibold border transition"
+              style={{
+                gap: 6,
+                padding: "6px 16px",
+                fontSize: 13,
+                borderRadius: 9999,
+                borderColor: displayBadgeId === "" ? "rgba(255,255,255,0.5)" : "rgba(255,255,255,0.15)",
+                background: displayBadgeId === "" ? "rgba(255,255,255,0.15)" : "transparent",
+                color: displayBadgeId === "" ? "var(--foreground)" : "var(--muted)",
+              }}
             >
               None
             </button>
@@ -329,16 +413,24 @@ export default function SettingsForm({ initial }: { initial: Initial }) {
                 key={b.badge.id}
                 type="button"
                 onClick={() => setDisplayBadgeId(b.badge.id)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition"
+                className="inline-flex items-center font-semibold border transition"
                 style={
                   displayBadgeId === b.badge.id
                     ? {
+                        gap: 6,
+                        padding: "6px 16px",
+                        fontSize: 13,
+                        borderRadius: 9999,
                         background: `${b.badge.color}40`,
                         borderColor: b.badge.color,
                         color: b.badge.color,
                         boxShadow: `0 0 0 1px ${b.badge.color}66`,
                       }
                     : {
+                        gap: 6,
+                        padding: "6px 16px",
+                        fontSize: 13,
+                        borderRadius: 9999,
                         background: `${b.badge.color}1a`,
                         borderColor: `${b.badge.color}44`,
                         color: b.badge.color,
@@ -350,18 +442,31 @@ export default function SettingsForm({ initial }: { initial: Initial }) {
               </button>
             ))}
           </div>
-        </div>
+        </Card>
       )}
 
-      <div className="flex items-center gap-3">
+      {/* ── Save ── */}
+      <div className="flex items-center" style={{ paddingTop: 4, gap: 12 }}>
         <button
           type="submit"
           disabled={saving}
-          className="btn-primary"
+          className="flex items-center justify-center font-semibold transition-opacity"
+          style={{
+            height: 48,
+            paddingLeft: 40,
+            paddingRight: 40,
+            fontSize: 15,
+            borderRadius: 9999,
+            background: "var(--accent)",
+            color: "#fff",
+            opacity: saving ? 0.6 : 1,
+          }}
         >
-          {saving ? "Saving..." : "Save changes"}
+          {saving ? "Saving…" : "Save changes"}
         </button>
-        {msg && <span className="text-[13px] text-[var(--muted)]">{msg}</span>}
+        {msg && (
+          <span style={{ fontSize: 14, color: "var(--muted)" }}>{msg}</span>
+        )}
       </div>
     </form>
   );

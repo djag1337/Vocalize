@@ -38,9 +38,9 @@ export async function POST(req: Request) {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { title, content, communitySlug } = await req.json();
-  if (!title?.trim() || !content?.trim()) {
-    return NextResponse.json({ error: "Title and content required" }, { status: 400 });
+  const { title, content, communitySlug, postType, imageUrl, musicUrl, flairId } = await req.json();
+  if (!title?.trim()) {
+    return NextResponse.json({ error: "Title is required" }, { status: 400 });
   }
 
   let communityId: string | undefined;
@@ -52,9 +52,13 @@ export async function POST(req: Request) {
   const post = await prisma.post.create({
     data: {
       title: title.trim(),
-      content: content.trim(),
+      content: content?.trim() || "",
+      postType: postType || "text",
+      imageUrl: imageUrl?.trim() || null,
+      musicUrl: musicUrl?.trim() || null,
       authorId: session.user.id,
       communityId,
+      flairId: flairId || null,
     },
   });
 

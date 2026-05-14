@@ -8,6 +8,56 @@ import PostCard from "@/components/PostCard";
 
 export const dynamic = "force-dynamic";
 
+/* ─────────────────────────────────────────────
+   Empty state
+───────────────────────────────────────────── */
+function EmptyState() {
+  return (
+    <div
+      className="flex flex-col items-center text-center"
+      style={{ padding: "72px 24px" }}
+    >
+      <div
+        className="flex items-center justify-center"
+        style={{
+          width: 64,
+          height: 64,
+          marginBottom: 20,
+          borderRadius: 9999,
+          background: "var(--surface-3)",
+        }}
+      >
+        <Bookmark
+          size={28}
+          strokeWidth={1.5}
+          style={{ color: "var(--muted)" }}
+        />
+      </div>
+      <p
+        className="font-bold"
+        style={{ fontSize: 17, color: "var(--foreground)", marginBottom: 8 }}
+      >
+        Nothing saved yet
+      </p>
+      <p
+        style={{ fontSize: 15, color: "var(--muted)", marginBottom: 24, maxWidth: 260 }}
+      >
+        Tap the bookmark on any post to save it here for later.
+      </p>
+      <Link
+        href="/feed"
+        className="font-bold hover:underline"
+        style={{ fontSize: 15, color: "var(--accent)" }}
+      >
+        Browse the feed →
+      </Link>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   Page
+───────────────────────────────────────────── */
 export default async function SavedPage() {
   const session = await auth();
   if (!session?.user) redirect("/login");
@@ -39,39 +89,34 @@ export default async function SavedPage() {
 
   const userId = session.user.id;
   const items = saves
-    .filter(s => !s.post.removed)
-    .map(s => ({
+    .filter((s) => !s.post.removed)
+    .map((s) => ({
       savedAt: s.savedAt,
       post: {
         ...s.post,
-        score: s.post.votes.reduce((sum: number, v: { value: number }) => sum + v.value, 0),
-        myVote: s.post.votes.find((v: { userId: string; value: number }) => v.userId === userId)?.value ?? 0,
+        score: s.post.votes.reduce(
+          (sum: number, v: { value: number }) => sum + v.value,
+          0,
+        ),
+        myVote:
+          s.post.votes.find(
+            (v: { userId: string; value: number }) => v.userId === userId,
+          )?.value ?? 0,
         commentCount: s.post._count.comments,
         saved: true,
       },
     }));
 
   return (
-    <AppShell username={session.user.name || ""}>
-      {/* Header */}
-      <header className="sticky top-0 z-10 bg-[var(--background)]/90 backdrop-blur border-b border-[var(--border)] px-4 py-3 flex items-center gap-3">
-        <Bookmark size={18} strokeWidth={2} className="text-[var(--muted)]" />
-        <h1 className="font-bold text-[15px]">Saved</h1>
-      </header>
-
-      {items.length === 0 ? (
-        <div className="p-10 text-center">
-          <Bookmark size={28} className="text-[var(--muted-2)] mx-auto mb-3" strokeWidth={1.5} />
-          <p className="text-[var(--muted)] text-[14px] mb-1">no saved posts yet</p>
-          <p className="text-[var(--muted-2)] text-[12px] mb-3">tap the bookmark on any post to save it</p>
-          <Link href="/feed" className="text-[var(--accent)] hover:underline text-[13px]">browse the feed →</Link>
-        </div>
-      ) : (
-        <div>
+    <AppShell username={session.user.name || ""} title="Saved">
+      {items.length > 0 ? (
+        <div className="flex flex-col" style={{ gap: "16px", paddingTop: "20px" }}>
           {items.map(({ post }) => (
             <PostCard key={post.id} post={post} myUserId={userId} />
           ))}
         </div>
+      ) : (
+        <EmptyState />
       )}
     </AppShell>
   );

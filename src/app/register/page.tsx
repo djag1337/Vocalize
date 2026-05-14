@@ -15,21 +15,41 @@ export default function RegisterPage() {
     const res = await fetch("/api/register", { method: "POST", body: JSON.stringify(form), headers: { "Content-Type": "application/json" } });
     setLoading(false);
     if (!res.ok) { const data = await res.json(); setErr(data.error || "Failed"); return; }
-    router.push("/login");
+    router.push("/login?callbackUrl=/welcome");
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center px-6 bg-[var(--background)] text-[var(--foreground)]">
-      <div className="w-full max-w-sm">
+    <main
+      className="min-h-screen flex items-center justify-center"
+      style={{ background: "var(--background)", color: "var(--foreground)", position: "relative", overflow: "hidden" }}
+    >
+      {/* Background glow orb */}
+      <div style={{
+        position: "absolute",
+        top: "35%", left: "50%", transform: "translate(-50%, -50%)",
+        width: 500, height: 500, borderRadius: "50%",
+        background: "radial-gradient(circle, color-mix(in srgb, var(--accent) 18%, transparent), transparent 70%)",
+        pointerEvents: "none",
+      }} />
+
+      <div className="w-full" style={{ maxWidth: 384, position: "relative", zIndex: 1, padding: "0 24px" }}>
         {/* Wordmark */}
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-[var(--accent-2)] to-[var(--accent)] bg-clip-text text-transparent">
+        <div className="text-center" style={{ marginBottom: 36 }}>
+          <img src="/logo.jpeg" alt="Vocalize" style={{ width: 80, height: 80, objectFit: "contain", mixBlendMode: "screen", marginBottom: 16 }} />
+          <h1 className="font-black" style={{
+            fontSize: 26,
+            background: "linear-gradient(to right, var(--accent-2), var(--accent))",
+            WebkitBackgroundClip: "text",
+            backgroundClip: "text",
+            color: "transparent",
+            WebkitTextFillColor: "transparent",
+          }}>
             Vocalize
           </h1>
-          <p className="text-[var(--muted)] text-[14px] mt-1.5">Join the conversation.</p>
+          <p style={{ color: "var(--muted)", fontSize: 14, marginTop: 6 }}>Join the conversation.</p>
         </div>
 
-        <form onSubmit={submit} className="space-y-3">
+        <form onSubmit={submit} className="flex flex-col" style={{ gap: 12 }}>
           <input
             className="input"
             placeholder="Email"
@@ -50,19 +70,20 @@ export default function RegisterPage() {
             value={form.password}
             onChange={e => setForm({ ...form, password: e.target.value })}
           />
-          {err && <p className="text-[var(--red)] text-[13px]">{err}</p>}
+          {err && <p style={{ color: "var(--red)", fontSize: 13 }}>{err}</p>}
           <button
             type="submit"
             disabled={loading}
-            className="btn-primary w-full mt-1"
+            className="w-full font-semibold transition-opacity"
+            style={{ height: 48, background: "var(--accent)", opacity: loading ? 0.6 : 1, marginTop: 4, borderRadius: 9999, color: "#fff", fontSize: 15 }}
           >
             {loading ? "Creating..." : "Create account"}
           </button>
         </form>
 
-        <p className="text-center text-[13px] text-[var(--muted)] mt-6">
+        <p className="text-center" style={{ fontSize: 13, color: "var(--muted)", marginTop: 24 }}>
           Already have an account?{" "}
-          <Link href="/login" className="text-[var(--foreground)] font-medium hover:underline">
+          <Link href="/login" className="font-medium hover:underline" style={{ color: "var(--foreground)" }}>
             Log in
           </Link>
         </p>

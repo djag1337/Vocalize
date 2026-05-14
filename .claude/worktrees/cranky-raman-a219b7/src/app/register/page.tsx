@@ -1,0 +1,72 @@
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+
+export default function RegisterPage() {
+  const [form, setForm] = useState({ email: "", username: "", password: "" });
+  const [err, setErr] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setErr(""); setLoading(true);
+    const res = await fetch("/api/register", { method: "POST", body: JSON.stringify(form), headers: { "Content-Type": "application/json" } });
+    setLoading(false);
+    if (!res.ok) { const data = await res.json(); setErr(data.error || "Failed"); return; }
+    router.push("/login");
+  }
+
+  return (
+    <main className="min-h-screen flex items-center justify-center px-6 bg-[var(--background)] text-[var(--foreground)]">
+      <div className="w-full max-w-sm">
+        {/* Wordmark */}
+        <div className="text-center mb-8">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-[var(--accent-2)] to-[var(--accent)] bg-clip-text text-transparent">
+            Vocalize
+          </h1>
+          <p className="text-[var(--muted)] text-[14px] mt-1.5">Join the conversation.</p>
+        </div>
+
+        <form onSubmit={submit} className="space-y-3">
+          <input
+            className="input"
+            placeholder="Email"
+            type="email"
+            value={form.email}
+            onChange={e => setForm({ ...form, email: e.target.value })}
+          />
+          <input
+            className="input"
+            placeholder="Username"
+            value={form.username}
+            onChange={e => setForm({ ...form, username: e.target.value })}
+          />
+          <input
+            className="input"
+            placeholder="Password (min 6)"
+            type="password"
+            value={form.password}
+            onChange={e => setForm({ ...form, password: e.target.value })}
+          />
+          {err && <p className="text-[var(--red)] text-[13px]">{err}</p>}
+          <button
+            type="submit"
+            disabled={loading}
+            className="btn-primary w-full mt-1"
+          >
+            {loading ? "Creating..." : "Create account"}
+          </button>
+        </form>
+
+        <p className="text-center text-[13px] text-[var(--muted)] mt-6">
+          Already have an account?{" "}
+          <Link href="/login" className="text-[var(--foreground)] font-medium hover:underline">
+            Log in
+          </Link>
+        </p>
+      </div>
+    </main>
+  );
+}

@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import SettingsForm from "./SettingsForm";
 import Link from "next/link";
+import AppShell from "@/components/AppShell";
 
 export const dynamic = "force-dynamic";
 
@@ -35,26 +36,10 @@ export default async function SettingsPage() {
   if (!user) redirect("/login");
 
   return (
-    <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
-      {/* Sticky back-nav */}
-      <header className="sticky top-0 z-10 bg-[var(--background)]/90 backdrop-blur border-b border-[var(--border)] px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Link
-            href={`/u/${user.username}`}
-            className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-[var(--surface-2)] transition-colors text-[var(--muted)] hover:text-[var(--foreground)]"
-          >
-            ←
-          </Link>
-          <span className="font-semibold text-[15px]">Settings</span>
-        </div>
-        <Link href={`/u/${user.username}`} className="btn-ghost text-xs py-1.5 px-4">
-          View profile
-        </Link>
-      </header>
-
-      <div className="max-w-2xl mx-auto px-5 py-8">
+    <AppShell username={session.user.name || user.username} title="Settings">
+      <div className="max-w-lg mx-auto" style={{ padding: "28px 20px 40px 20px" }}>
         <SettingsForm initial={user} />
       </div>
-    </main>
+    </AppShell>
   );
 }

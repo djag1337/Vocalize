@@ -8,9 +8,16 @@ import JoinButton from "./JoinButton";
 
 export const dynamic = "force-dynamic";
 
-export default async function CommunityPage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ sort?: string }> }) {
+export default async function CommunityPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ sort?: string }>;
+}) {
   const session = await auth();
   if (!session?.user) redirect("/login");
+
   const { slug } = await params;
   const { sort } = await searchParams;
   const sortMode = sort === "top" ? "top" : "new";
@@ -31,7 +38,10 @@ export default async function CommunityPage({ params, searchParams }: { params: 
 
   const posts = await prisma.post.findMany({
     where: { communityId: community.id, removed: false },
-    orderBy: sortMode === "top" ? { votes: { _count: "desc" } } : { createdAt: "desc" },
+    orderBy:
+      sortMode === "top"
+        ? { votes: { _count: "desc" } }
+        : { createdAt: "desc" },
     take: 50,
     include: {
       author: {
@@ -56,6 +66,9 @@ export default async function CommunityPage({ params, searchParams }: { params: 
     id: p.id,
     title: p.title,
     content: p.content,
+    postType: p.postType,
+    imageUrl: p.imageUrl,
+    musicUrl: p.musicUrl,
     createdAt: p.createdAt,
     pinned: p.pinned,
     locked: p.locked,
@@ -72,77 +85,134 @@ export default async function CommunityPage({ params, searchParams }: { params: 
   const accent = community.themeColor || "var(--accent)";
 
   return (
-    <AppShell username={session.user.name || ""}>
-      {/* Header */}
-      <header className="sticky top-0 z-10 bg-[var(--background)]/90 backdrop-blur border-b border-[var(--border)] px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Link
-            href="/feed"
-            className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-[var(--surface-2)] transition-colors text-[var(--muted)] hover:text-[var(--foreground)]"
-          >
-            ←
-          </Link>
-          <span className="font-semibold text-[15px]" style={{ color: accent }}>
-            c/{community.slug}
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Link href="/c" className="btn-ghost text-xs py-1.5 px-3">Communities</Link>
-          <Link
-            href={`/submit?c=${community.slug}`}
-            className="pill pill-primary text-xs"
-          >
-            + Post
-          </Link>
-        </div>
-      </header>
+    <AppShell username={session.user.name || ""} title={community.name}>
 
-      {/* Community info */}
-      <div className="px-4 py-5 border-b border-[var(--border)]">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex-1 min-w-0">
-            <h1 className="text-xl font-bold" style={{ color: accent }}>
-              c/{community.slug}
-            </h1>
-            <p className="text-[var(--muted)] text-[14px] mt-0.5">{community.name}</p>
-            {community.description && (
-              <p className="text-[var(--muted)] text-[13px] mt-2">{community.description}</p>
-            )}
-            <p className="text-[12px] text-[var(--muted-2)] mt-2">
-              {community._count.members} members · {community._count.posts} posts · owned by @{community.owner.username}
-            </p>
+      {/* ── Community header card ── */}
+      <div style={{ padding: "16px 16px 8px" }}>
+        <div
+          style={{
+            background: "var(--surface-3)",
+            borderRadius: 24,
+            boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
+            padding: "22px 22px 20px",
+          }}
+        >
+          {/* Top row: avatar + name + join */}
+          <div className="flex items-start justify-between" style={{ gap: 16 }}>
+            <div className="flex items-center" style={{ gap: 14 }}>
+              <div
+                className="flex items-center justify-center font-bold shrink-0"
+                style={{
+                  width: 54, height: 54, borderRadius: "50%",
+                  background: `linear-gradient(135deg, ${accent}99, ${accent})`,
+                  fontSize: 22, color: "#fff",
+                }}
+              >
+                {community.name[0]}
+              </div>
+              <div>
+                <h1 className="font-bold" style={{ fontSize: 20, lineHeight: "1.2", color: "var(--foreground)" }}>
+                  {community.name}
+                </h1>
+                <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 3 }}>
+                  s/{community.slug}
+                </p>
+              </div>
+            </div>
+            <JoinButton
+              slug={community.slug}
+              initiallyJoined={!!membership}
+              accent={accent}
+            />
           </div>
-          <JoinButton slug={community.slug} initiallyJoined={!!membership} accent={accent} />
+
+          {/* Description */}
+          {community.description && (
+            <p
+              style={{ fontSize: 15, lineHeight: "1.5", marginTop: 16, color: "var(--foreground)" }}
+            >
+              {community.description}
+            </p>
+          )}
+
+          {/* Meta */}
+          <p style={{ color: "var(--muted)", fontSize: 13, marginTop: 12 }}>
+            {community._count.members.toLocaleString()} members
+            {" · "}
+            {community._count.posts} posts
+            {" · "}
+            by{" "}
+            <Link
+              href={`/u/${community.owner.username}`}
+              className="hover:underline"
+              style={{ color: "var(--muted)" }}
+            >
+              @{community.owner.username}
+            </Link>
+          </p>
+
+          {/* Accent strip */}
+          <div
+            style={{ height: 3, background: accent, marginTop: 18, opacity: 0.7, borderRadius: 9999 }}
+          />
         </div>
       </div>
 
-      {/* Sort tabs */}
-      <div className="flex border-b border-[var(--border)]">
+      {/* ── Sort tabs ── */}
+      <div
+        className="flex"
+        style={{ marginTop: 8, borderBottom: "1px solid var(--border)" }}
+      >
         {(["new", "top"] as const).map(mode => (
           <Link
             key={mode}
             href={`/c/${community.slug}?sort=${mode}`}
-            className={`flex-1 text-center py-3 text-[13px] border-b-2 transition ${
-              sortMode === mode
-                ? "border-[var(--accent)] text-[var(--foreground)] font-semibold"
-                : "border-transparent text-[var(--muted)] hover:bg-[var(--surface)]"
-            }`}
+            className="flex-1 text-center transition"
+            style={{
+              padding: "12px 0",
+              fontSize: 13,
+              fontWeight: sortMode === mode ? 600 : 400,
+              color: sortMode === mode ? "var(--foreground)" : "var(--muted)",
+              borderBottom: sortMode === mode ? `2px solid ${accent}` : "2px solid transparent",
+            }}
           >
             {mode.charAt(0).toUpperCase() + mode.slice(1)}
           </Link>
         ))}
       </div>
 
-      {/* Posts */}
+      {/* ── Posts or empty state ── */}
       {shaped.length === 0 ? (
-        <div className="p-10 text-center">
-          <p className="text-[var(--muted)] text-[14px] mb-2">no posts here yet</p>
-          <Link href={`/submit?c=${community.slug}`} className="text-[var(--accent)] hover:underline text-[13px]">
-            be the first →
+        <div
+          className="text-center"
+          style={{
+            background: "var(--surface-3)",
+            borderRadius: 24,
+            boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
+            margin: "16px",
+            padding: "48px 24px",
+          }}
+        >
+          <div style={{ fontSize: 40, marginBottom: 12 }}>👋</div>
+          <p
+            className="font-bold"
+            style={{ fontSize: 17, marginBottom: 8, color: "var(--foreground)" }}
+          >
+            No posts yet — be the first!
+          </p>
+          <p style={{ color: "var(--muted)", fontSize: 15, marginBottom: 24 }}>
+            Share something with {community.name}
+          </p>
+          <Link
+            href={`/submit?c=${community.slug}`}
+            className="inline-block font-medium"
+            style={{ background: accent, padding: "10px 28px", fontSize: 14, borderRadius: 9999, color: "#fff" }}
+          >
+            Create Post
           </Link>
         </div>
       ) : (
-        <div>
+        <div className="flex flex-col" style={{ padding: "16px", gap: 16 }}>
           {shaped.map(p => (
             <PostCard key={p.id} post={p} myUserId={userId} />
           ))}

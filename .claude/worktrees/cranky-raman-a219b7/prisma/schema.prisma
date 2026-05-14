@@ -1,0 +1,240 @@
+// Vocalize - Prisma schema
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  username      String    @unique
+  email         String    @unique
+  passwordHash  String
+  displayName   String?
+  bio           String?
+  avatarUrl     String?
+  bannerUrl     String?
+  themeColor    String    @default("#a855f7")
+  accentColor   String    @default("#ec4899")
+  feedDensity   String    @default("comfortable") // comfortable | compact | card
+  nowPlaying    String?   // "Artist — Song" or a Spotify track URL
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  displayBadgeId   String?
+  displayBadge     Badge?    @relation("UserDisplayBadge", fields: [displayBadgeId], references: [id])
+
+  posts            Post[]
+  comments         Comment[]
+  votes            Vote[]
+  communities      CommunityMember[]
+  ownedCommunities Community[] @relation("CommunityOwner")
+  badges           UserBadge[]
+  saves            SavedPost[]
+  notifications    Notification[] @relation("RecipientNotifications")
+  triggered        Notification[] @relation("ActorNotifications")
+  reportsMade      Report[]       @relation("Reporter")
+  modActionsTaken  ModAction[]    @relation("ModActor")
+  reactions        Reaction[]
+}
+
+model Badge {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  description String
+  icon        String
+  color       String   @default("#a855f7")
+  rarity      String   @default("common")
+  createdAt   DateTime @default(now())
+
+  users            UserBadge[]
+  displayedByUsers User[]    @relation("UserDisplayBadge")
+}
+
+model UserBadge {
+  id        String   @id @default(cuid())
+  userId    String
+  badgeId   String
+  awardedAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badge     Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, badgeId])
+}
+
+model Community {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  description String?
+  rules       String?   @db.Text
+  iconUrl     String?
+  bannerUrl   String?
+  ownerId     String
+  owner       User     @relation("CommunityOwner", fields: [ownerId], references: [id])
+  themeColor  String   @default("#a855f7")
+  createdAt   DateTime @default(now())
+
+  posts       Post[]
+  members     CommunityMember[]
+  flairs      Flair[]
+  reports     Report[]
+  modActions  ModAction[]
+}
+
+model CommunityMember {
+  id          String   @id @default(cuid())
+  userId      String
+  communityId String
+  role        String   @default("member") // member | mod | owner
+  joinedAt    DateTime @default(now())
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, communityId])
+}
+
+model Flair {
+  id          String   @id @default(cuid())
+  communityId String
+  name        String
+  color       String   @default("#a855f7")
+  createdAt   DateTime @default(now())
+
+  community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  posts       Post[]
+}
+
+model Post {
+  id          String   @id @default(cuid())
+  title       String
+  content     String   @db.Text
+  authorId    String
+  communityId String?
+  flairId     String?
+  pinned      Boolean  @default(false)
+  locked      Boolean  @default(false)
+  removed     Boolean  @default(false)
+  removedReason String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  author      User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  community   Community? @relation(fields: [communityId], references: [id])
+  flair       Flair?     @relation(fields: [flairId], references: [id])
+  comments    Comment[]
+  votes       Vote[]
+  saves       SavedPost[]
+  reports     Report[]
+  reactions   Reaction[]
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String   @db.Text
+  authorId  String
+  postId    String
+  parentId  String?
+  removed   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  post      Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies   Comment[] @relation("CommentReplies")
+  votes     Vote[]
+  reports   Report[]
+}
+
+model Vote {
+  id        String   @id @default(cuid())
+  userId    String
+  postId    String?
+  commentId String?
+  value     Int
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+  @@unique([userId, commentId])
+}
+
+model SavedPost {
+  id        String   @id @default(cuid())
+  userId    String
+  postId    String
+  savedAt   DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+}
+
+model Notification {
+  id          String   @id @default(cuid())
+  recipientId String
+  actorId     String?
+  type        String   // reply | mention | vote | mod | system
+  postId      String?
+  commentId   String?
+  message     String
+  read        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  recipient   User   @relation("RecipientNotifications", fields: [recipientId], references: [id], onDelete: Cascade)
+  actor       User?  @relation("ActorNotifications", fields: [actorId], references: [id], onDelete: SetNull)
+}
+
+model Report {
+  id          String   @id @default(cuid())
+  reporterId  String
+  postId      String?
+  commentId   String?
+  communityId String?
+  reason      String
+  details     String?  @db.Text
+  status      String   @default("open") // open | resolved | dismissed
+  createdAt   DateTime @default(now())
+
+  reporter    User       @relation("Reporter", fields: [reporterId], references: [id], onDelete: Cascade)
+  post        Post?      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  comment     Comment?   @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  community   Community? @relation(fields: [communityId], references: [id])
+}
+
+model ModAction {
+  id          String   @id @default(cuid())
+  modId       String
+  communityId String?
+  action      String   // remove_post | remove_comment | lock | pin | ban | unban
+  targetType  String   // post | comment | user
+  targetId    String
+  reason      String?
+  createdAt   DateTime @default(now())
+
+  mod         User       @relation("ModActor", fields: [modId], references: [id], onDelete: Cascade)
+  community   Community? @relation(fields: [communityId], references: [id])
+}
+
+model Reaction {
+  id        String   @id @default(cuid())
+  userId    String
+  postId    String
+  emoji     String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId, emoji])
+}

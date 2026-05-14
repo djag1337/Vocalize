@@ -1,6 +1,7 @@
 // Vocalize - Prisma schema
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 datasource db {
@@ -114,7 +115,10 @@ model Flair {
 model Post {
   id          String   @id @default(cuid())
   title       String
-  content     String   @db.Text
+  content     String   @default("") @db.Text
+  postType    String   @default("text")   // text | image | music
+  imageUrl    String?
+  musicUrl    String?
   authorId    String
   communityId String?
   flairId     String?
@@ -237,4 +241,13 @@ model Reaction {
   post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@unique([userId, postId, emoji])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
 }

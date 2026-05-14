@@ -20,7 +20,14 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "not a mod" }, { status: 403 });
   }
 
-  if (action === "remove_post") {
+  if (action === "delete_post") {
+    // Hard delete — cascades to comments, votes, etc. via Prisma schema
+    await prisma.post.delete({ where: { id: targetId } });
+    await prisma.modAction.create({
+      data: { modId: session.user.id, communityId, action, targetType: "post", targetId, reason: reason || null },
+    });
+    return NextResponse.json({ ok: true });
+  } else if (action === "remove_post") {
     await prisma.post.update({ where: { id: targetId }, data: { removed: true, removedReason: reason || null } });
   } else if (action === "remove_comment") {
     await prisma.comment.update({ where: { id: targetId }, data: { removed: true } });
