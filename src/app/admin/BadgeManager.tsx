@@ -442,8 +442,8 @@ export default function BadgeManager({ allBadges }: { allBadges: Badge[] }) {
                               background: `${rarityColor}18`,
                               color: rarityColor,
                               border: `1px solid ${rarityColor}30`,
-                              textTransform: "uppercase",
-                              letterSpacing: "0.04em",
+                              textTransform: badge.rarity === "exclusive" ? "none" : "uppercase",
+                              letterSpacing: badge.rarity === "exclusive" ? "0" : "0.04em",
                             }}
                           >
                             {RARITY_LABELS[badge.rarity] ?? badge.rarity}
