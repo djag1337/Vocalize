@@ -6,17 +6,6 @@ import AppShell from "@/components/AppShell";
 
 export const dynamic = "force-dynamic";
 
-const DEMO_SPACES = [
-  { slug: "indie-rock",        name: "Indie Rock",        members: "2.4k", posts: 841,  description: "Guitar-driven anthems, lo-fi dreams, and bedroom recordings that hit hard.", accent: "#E85D4A" },
-  { slug: "lo-fi-chill",       name: "Lo-Fi & Chill",     members: "5.1k", posts: 2103, description: "Beats to study, sleep, and drift to. No drops, just vibes.", accent: "#6C63FF" },
-  { slug: "vinyl-heads",       name: "Vinyl Heads",       members: "1.8k", posts: 519,  description: "Crackle and warmth. Share your latest hauls, setups, and sleeve art.", accent: "#F5A623" },
-  { slug: "concert-clips",     name: "Concert Clips",     members: "3.7k", posts: 1240, description: "You were there. Show us the moment — vertical blur and all.", accent: "#00BA7C" },
-  { slug: "music-production",  name: "Music Production",  members: "4.2k", posts: 988,  description: "DAWs, plugins, mixing tips, and feedback on your tracks.", accent: "#1DA1F2" },
-  { slug: "new-releases",      name: "New Releases",      members: "9.3k", posts: 3872, description: "Everything dropping this week. Reviews, hot takes, and first listens.", accent: "#FF6B9D" },
-  { slug: "artist-spotlights", name: "Artist Spotlights", members: "2.0k", posts: 674,  description: "Shine a light on artists you think deserve more ears.", accent: "#FFB347" },
-  { slug: "deep-cuts",         name: "Deep Cuts",         members: "1.3k", posts: 421,  description: "Obscure B-sides, forgotten albums, and tracks only you seem to know.", accent: "#9B59B6" },
-];
-
 function fmt(n: number) {
   if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, "") + "k";
   return String(n);
@@ -86,62 +75,6 @@ export default async function SpacesPage() {
               >
                 Create a space
               </Link>
-            </div>
-
-            {/* Section label */}
-            <p
-              className="font-semibold"
-              style={{ color: "var(--muted)", fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 12 }}
-            >
-              Popular on Vocalize
-            </p>
-
-            {/* Demo space cards */}
-            <div className="flex flex-col" style={{ gap: 10 }}>
-              {DEMO_SPACES.map(s => (
-                <div
-                  key={s.slug}
-                  className="flex items-center"
-                  style={{
-                    background: "var(--surface-3)",
-                    borderRadius: 24,
-                    boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
-                    padding: "14px 18px",
-                    gap: 14,
-                  }}
-                >
-                  <div
-                    className="flex items-center justify-center font-bold shrink-0"
-                    style={{
-                      width: 48, height: 48,
-                      borderRadius: "50%",
-                      background: `linear-gradient(135deg, ${s.accent}88, ${s.accent})`,
-                      fontSize: 18,
-                      color: "#fff",
-                    }}
-                  >
-                    {s.name[0]}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="font-bold truncate" style={{ fontSize: 15, color: "var(--foreground)" }}>
-                      {s.name}
-                    </div>
-                    <div style={{ color: "var(--muted)", fontSize: 12, marginTop: 1 }}>s/{s.slug}</div>
-                    <div
-                      style={{
-                        color: "var(--muted)", fontSize: 13, marginTop: 5, lineHeight: "1.4",
-                        display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
-                      }}
-                    >
-                      {s.description}
-                    </div>
-                  </div>
-                  <div className="shrink-0 text-right" style={{ minWidth: 52 }}>
-                    <div className="font-semibold" style={{ fontSize: 14, color: "var(--foreground)" }}>{s.members}</div>
-                    <div style={{ color: "var(--muted)", fontSize: 11, marginTop: 1 }}>members</div>
-                  </div>
-                </div>
-              ))}
             </div>
           </>
         ) : (
