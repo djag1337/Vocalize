@@ -28,7 +28,7 @@ const RARITY_LABELS: Record<string, string> = {
   rare: "Rare",
   epic: "Epic",
   legendary: "Legendary",
-  exclusive: "Legendary",
+  exclusive: "Legend-Ary",
 };
 
 const RARITY_COLORS: Record<string, string> = {
