@@ -8,7 +8,7 @@ export async function POST(req: Request) {
   const { communityId, name, color } = await req.json();
   if (!communityId || !name) return NextResponse.json({ error: "missing" }, { status: 400 });
   const m = await prisma.communityMember.findUnique({
-    where: { userId_communityId: { userId: session.user.id, communityId } },
+    where: { userId_communityId: { userId: session.user.id!, communityId } },
   });
   if (m?.role !== "mod" && m?.role !== "owner") {
     return NextResponse.json({ error: "not a mod" }, { status: 403 });

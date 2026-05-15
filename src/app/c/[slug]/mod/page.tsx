@@ -22,7 +22,7 @@ export default async function ModPage({ params }: { params: Promise<{ slug: stri
 
   // verify user is a mod
   const member = await prisma.communityMember.findUnique({
-    where: { userId_communityId: { userId: session.user.id, communityId: community.id } },
+    where: { userId_communityId: { userId: session.user.id!, communityId: community.id } },
     select: { role: true },
   });
   const isMod = member?.role === "mod" || member?.role === "owner" || community.ownerId === session.user.id;

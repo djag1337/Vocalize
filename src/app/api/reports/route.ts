@@ -19,7 +19,7 @@ export async function POST(req: Request) {
 
   const r = await prisma.report.create({
     data: {
-      reporterId: session.user.id,
+      reporterId: session.user.id!,
       postId: postId || null,
       commentId: commentId || null,
       communityId,

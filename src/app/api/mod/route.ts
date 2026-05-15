@@ -16,7 +16,7 @@ export async function POST(req: Request) {
   const body = await req.json();
   const { action, targetType, targetId, reason, communityId } = body;
 
-  if (!await isMod(session.user.id, communityId)) {
+  if (!await isMod(session.user.id!, communityId)) {
     return NextResponse.json({ error: "not a mod" }, { status: 403 });
   }
 
@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     // Hard delete — cascades to comments, votes, etc. via Prisma schema
     await prisma.post.delete({ where: { id: targetId } });
     await prisma.modAction.create({
-      data: { modId: session.user.id, communityId, action, targetType: "post", targetId, reason: reason || null },
+      data: { modId: session.user.id!, communityId, action, targetType: "post", targetId, reason: reason || null },
     });
     return NextResponse.json({ ok: true });
   } else if (action === "remove_post") {
@@ -51,7 +51,7 @@ export async function POST(req: Request) {
 
   await prisma.modAction.create({
     data: {
-      modId: session.user.id,
+      modId: session.user.id!,
       communityId,
       action,
       targetType,
