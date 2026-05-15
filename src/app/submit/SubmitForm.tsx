@@ -95,6 +95,8 @@ export default function SubmitForm({
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  const [imageUploading, setImageUploading] = useState(false);
+  const imageFileRef = useRef<HTMLInputElement>(null);
   const [musicUrl, setMusicUrl] = useState("");
   const [communitySlug, setCommunitySlug] = useState("");
   const [communityId, setCommunityId] = useState("");
@@ -372,16 +374,46 @@ export default function SubmitForm({
           </>
         )}
 
-        {/* ── IMAGE: URL input + preview ── */}
+        {/* ── IMAGE: file picker + URL input + preview ── */}
         {postType === "image" && (
           <>
-            <input
-              value={imageUrl}
-              onChange={(e) => { setImageUrl(e.target.value); setImgError(false); }}
-              className="input font-mono w-full"
-              style={{ marginBottom: 14, fontSize: 14 }}
-              placeholder="https://... (direct image URL)"
-            />
+            <div className="flex items-center" style={{ gap: 10, marginBottom: 14 }}>
+              <button
+                type="button"
+                onClick={() => imageFileRef.current?.click()}
+                disabled={imageUploading}
+                className="inline-flex items-center font-medium border transition shrink-0"
+                style={{ gap: 8, height: 40, padding: "0 18px", borderRadius: 9999, fontSize: 14, borderColor: "var(--border)", color: "var(--foreground)", background: "var(--surface-3)", cursor: imageUploading ? "wait" : "pointer" }}
+              >
+                <Image size={15} />
+                {imageUploading ? "Uploading…" : "Choose photo"}
+              </button>
+              <input
+                ref={imageFileRef}
+                type="file"
+                accept="image/*"
+                className="sr-only"
+                onChange={async e => {
+                  const f = e.target.files?.[0];
+                  if (!f) return;
+                  setImageUploading(true);
+                  setImgError(false);
+                  const fd = new FormData();
+                  fd.append("file", f);
+                  const res = await fetch("/api/upload", { method: "POST", body: fd });
+                  setImageUploading(false);
+                  if (res.ok) { const { url } = await res.json(); setImageUrl(url); }
+                  else setErr("Upload failed");
+                }}
+              />
+              <input
+                value={imageUrl}
+                onChange={(e) => { setImageUrl(e.target.value); setImgError(false); }}
+                className="input font-mono flex-1"
+                style={{ fontSize: 13 }}
+                placeholder="or paste a direct image URL"
+              />
+            </div>
             {imageUrl && !imgError && (
               <div style={{ marginBottom: 14, background: "var(--card)", borderRadius: 16, overflow: "hidden" }}>
                 <img

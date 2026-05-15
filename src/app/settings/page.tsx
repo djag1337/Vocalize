@@ -21,7 +21,7 @@ export default async function SettingsPage() {
       bannerUrl: true,
       themeColor: true,
       accentColor: true,
-      feedDensity: true,
+
       displayBadgeId: true,
       nowPlaying: true,
       badges: {

@@ -23,7 +23,7 @@ export async function PATCH(req: Request) {
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await req.json();
-  const allowed = ["displayName", "bio", "avatarUrl", "themeColor", "accentColor", "bannerUrl", "feedDensity", "displayBadgeId", "nowPlaying"];
+  const allowed = ["displayName", "bio", "avatarUrl", "themeColor", "accentColor", "bannerUrl", "displayBadgeId", "nowPlaying"];
   const data: Record<string, string | null> = {};
   for (const k of allowed) {
     if (body[k] !== undefined) {

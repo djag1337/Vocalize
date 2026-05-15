@@ -1,6 +1,7 @@
 "use client";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ImageIcon } from "lucide-react";
 
 type BadgeEntry = {
   id: string;
@@ -15,17 +16,10 @@ type Initial = {
   bannerUrl: string | null;
   themeColor: string;
   accentColor: string;
-  feedDensity: string;
   displayBadgeId: string | null;
   badges: BadgeEntry[];
   nowPlaying: string | null;
 };
-
-const DENSITY_OPTIONS: { value: string; label: string }[] = [
-  { value: "comfortable", label: "Comfortable" },
-  { value: "compact", label: "Compact" },
-  { value: "card", label: "Card" },
-];
 
 const THEME_SWATCHES = ["#a855f7", "#3b82f6", "#10b981", "#f97316", "#ef4444", "#eab308"];
 const ACCENT_SWATCHES = ["#ec4899", "#06b6d4", "#84cc16", "#f59e0b", "#6366f1", "#14b8a6"];
@@ -77,14 +71,28 @@ export default function SettingsForm({ initial }: { initial: Initial }) {
   const [bannerUrl, setBannerUrl] = useState(initial.bannerUrl ?? "");
   const [themeColor, setThemeColor] = useState(initial.themeColor);
   const [accentColor, setAccentColor] = useState(initial.accentColor);
-  const [feedDensity, setFeedDensity] = useState(initial.feedDensity ?? "comfortable");
   const [displayBadgeId, setDisplayBadgeId] = useState(initial.displayBadgeId ?? "");
   const [nowPlaying, setNowPlaying] = useState(initial.nowPlaying ?? "");
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+  const [uploading, setUploading] = useState<"avatar" | "banner" | null>(null);
 
   const themeColorInputRef = useRef<HTMLInputElement>(null);
   const accentColorInputRef = useRef<HTMLInputElement>(null);
+  const avatarFileRef = useRef<HTMLInputElement>(null);
+  const bannerFileRef = useRef<HTMLInputElement>(null);
+
+  async function uploadFile(file: File, field: "avatar" | "banner") {
+    setUploading(field);
+    const fd = new FormData();
+    fd.append("file", file);
+    const res = await fetch("/api/upload", { method: "POST", body: fd });
+    setUploading(null);
+    if (!res.ok) { setMsg("Upload failed"); return; }
+    const { url } = await res.json();
+    if (field === "avatar") setAvatarUrl(url);
+    else setBannerUrl(url);
+  }
 
   const selectedBadge = initial.badges.find((b) => b.badge.id === displayBadgeId)?.badge ?? null;
 
@@ -102,7 +110,6 @@ export default function SettingsForm({ initial }: { initial: Initial }) {
         bannerUrl,
         themeColor,
         accentColor,
-        feedDensity,
         displayBadgeId,
         nowPlaying,
       }),
@@ -212,24 +219,62 @@ export default function SettingsForm({ initial }: { initial: Initial }) {
             </span>
           </div>
           <div>
-            <FieldLabel>Avatar URL</FieldLabel>
-            <input
-              value={avatarUrl}
-              onChange={(e) => setAvatarUrl(e.target.value)}
-              className="input font-mono w-full"
-              style={{ fontSize: 14 }}
-              placeholder="https://..."
-            />
+            <FieldLabel>Avatar</FieldLabel>
+            <div className="flex items-center" style={{ gap: 10 }}>
+              <button
+                type="button"
+                onClick={() => avatarFileRef.current?.click()}
+                disabled={uploading === "avatar"}
+                className="inline-flex items-center font-medium border transition"
+                style={{ gap: 8, height: 38, padding: "0 16px", borderRadius: 9999, fontSize: 13, borderColor: "var(--border)", color: "var(--foreground)", background: "var(--surface-3)", cursor: uploading === "avatar" ? "wait" : "pointer" }}
+              >
+                <ImageIcon size={14} />
+                {uploading === "avatar" ? "Uploading…" : "Choose photo"}
+              </button>
+              <input
+                ref={avatarFileRef}
+                type="file"
+                accept="image/*"
+                className="sr-only"
+                onChange={e => { const f = e.target.files?.[0]; if (f) uploadFile(f, "avatar"); }}
+              />
+              <input
+                value={avatarUrl}
+                onChange={(e) => setAvatarUrl(e.target.value)}
+                className="input font-mono flex-1"
+                style={{ fontSize: 13 }}
+                placeholder="or paste a URL"
+              />
+            </div>
           </div>
           <div>
-            <FieldLabel>Banner URL</FieldLabel>
-            <input
-              value={bannerUrl}
-              onChange={(e) => setBannerUrl(e.target.value)}
-              className="input font-mono w-full"
-              style={{ fontSize: 14 }}
-              placeholder="https://... (leave empty for color gradient)"
-            />
+            <FieldLabel>Banner</FieldLabel>
+            <div className="flex items-center" style={{ gap: 10 }}>
+              <button
+                type="button"
+                onClick={() => bannerFileRef.current?.click()}
+                disabled={uploading === "banner"}
+                className="inline-flex items-center font-medium border transition"
+                style={{ gap: 8, height: 38, padding: "0 16px", borderRadius: 9999, fontSize: 13, borderColor: "var(--border)", color: "var(--foreground)", background: "var(--surface-3)", cursor: uploading === "banner" ? "wait" : "pointer" }}
+              >
+                <ImageIcon size={14} />
+                {uploading === "banner" ? "Uploading…" : "Choose photo"}
+              </button>
+              <input
+                ref={bannerFileRef}
+                type="file"
+                accept="image/*"
+                className="sr-only"
+                onChange={e => { const f = e.target.files?.[0]; if (f) uploadFile(f, "banner"); }}
+              />
+              <input
+                value={bannerUrl}
+                onChange={(e) => setBannerUrl(e.target.value)}
+                className="input font-mono flex-1"
+                style={{ fontSize: 13 }}
+                placeholder="or paste URL (empty = gradient)"
+              />
+            </div>
           </div>
           <div>
             <FieldLabel>Now Playing</FieldLabel>
@@ -357,31 +402,6 @@ export default function SettingsForm({ initial }: { initial: Initial }) {
             background: `linear-gradient(135deg, ${themeColor}, ${accentColor})`,
           }}
         />
-      </Card>
-
-      {/* ── Feed density ── */}
-      <Card>
-        <SectionLabel>Feed density</SectionLabel>
-        <div className="flex" style={{ gap: 8 }}>
-          {DENSITY_OPTIONS.map((opt) => (
-            <button
-              key={opt.value}
-              type="button"
-              onClick={() => setFeedDensity(opt.value)}
-              className="flex-1 font-medium border transition"
-              style={{
-                height: 40,
-                fontSize: 14,
-                borderRadius: 9999,
-                borderColor: feedDensity === opt.value ? "var(--accent)" : "var(--border)",
-                background: feedDensity === opt.value ? "var(--accent-soft)" : "transparent",
-                color: feedDensity === opt.value ? "var(--accent)" : "var(--muted)",
-              }}
-            >
-              {opt.label}
-            </button>
-          ))}
-        </div>
       </Card>
 
       {/* ── Display badge ── */}
