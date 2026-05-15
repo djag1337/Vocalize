@@ -82,8 +82,8 @@ export default function LoginPage() {
 
       <div className="w-full" style={{ maxWidth: 384, position: "relative", zIndex: 1 }}>
         {/* Wordmark */}
-        <div className="text-center" style={{ marginBottom: 36 }}>
-          <img src="/logo.jpeg" alt="Vocalize" style={{ width: 80, height: 80, objectFit: "contain", mixBlendMode: "screen", marginBottom: 16 }} />
+        <div style={{ textAlign: "center", marginBottom: 36 }}>
+          <img src="/logo.jpeg" alt="Vocalize" style={{ width: 80, height: 80, objectFit: "contain", mixBlendMode: "screen", marginBottom: 16, display: "block", margin: "0 auto 16px" }} />
           <h1 className="font-black" style={{
             fontSize: 26,
             background: "linear-gradient(to right, var(--accent-2), var(--accent))",
