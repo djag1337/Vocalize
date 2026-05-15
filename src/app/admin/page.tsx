@@ -20,13 +20,13 @@ import AppShell from "@/components/AppShell";
 
 export const dynamic = "force-dynamic";
 
-const ADMIN_USERNAME = "DjagDev";
+const ADMIN_USERNAME = "djagdev";
 
 export default async function AdminPage() {
   const session = await auth();
   if (!session?.user) redirect("/login");
 
-  if (session.user.name !== ADMIN_USERNAME) {
+  if (session.user.name?.toLowerCase() !== ADMIN_USERNAME) {
     return (
       <AppShell username={session.user.name || ""} title="Admin">
         <div
