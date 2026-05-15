@@ -264,9 +264,9 @@ export default function SubmitForm({
         {postType === "text" && (
           <>
             {/* Toolbar row + Write/Preview toggle */}
-            <div className="flex items-center justify-between" style={{ marginBottom: 10 }}>
+            <div className="flex items-start justify-between flex-wrap" style={{ marginBottom: 10, gap: 6 }}>
               {/* Formatting buttons — hidden while previewing */}
-              <div className="flex items-center flex-wrap" style={{ gap: 2, visibility: previewing ? "hidden" : "visible" }}>
+              <div className="flex items-center flex-wrap" style={{ gap: 2, visibility: previewing ? "hidden" : "visible", flex: 1, minWidth: 0 }}>
                 {TOOLBAR.map(({ action, Icon, title: ttl }) => (
                   <button
                     key={action}
@@ -602,14 +602,14 @@ export default function SubmitForm({
           <p style={{ marginBottom: 16, color: "var(--red)", fontSize: 14 }}>{err}</p>
         )}
 
-        <div className="flex items-center justify-between">
-          <span style={{ fontSize: 13, color: "var(--muted)" }}>
+        <div className="flex items-center justify-between flex-wrap" style={{ gap: 12 }}>
+          <span style={{ fontSize: 13, color: "var(--muted)", flex: 1, minWidth: 0 }}>
             {communitySlug ? `Posting to s/${communitySlug}` : "Posting to your profile"}
           </span>
           <button
             type="submit"
             disabled={busy || !title.trim()}
-            className="flex items-center justify-center font-semibold transition-opacity"
+            className="flex items-center justify-center font-semibold transition-opacity shrink-0"
             style={{
               height: 48,
               paddingLeft: 36,

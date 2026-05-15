@@ -76,6 +76,60 @@ html, body {
   color: white; font-weight: 700; flex-shrink: 0;
 }
 
+/* PostCard responsive padding */
+.post-card-article {
+  padding: 28px 36px 0 36px;
+}
+.post-card-content {
+  padding-left: 56px;
+  padding-right: 8px;
+}
+@media (max-width: 639px) {
+  .post-card-article {
+    padding: 20px 16px 0 16px;
+  }
+  /* On mobile, drop the author-indent to avoid over-tight content */
+  .post-card-content {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+/* PostModal responsive layout */
+@media (max-width: 639px) {
+  .post-modal-backdrop {
+    padding-top: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    align-items: flex-end !important;
+  }
+  .post-modal-shell {
+    border-radius: 28px 28px 0 0 !important;
+    max-height: 92dvh !important;
+    border-bottom: none !important;
+  }
+  .post-modal-body {
+    padding: 20px 16px 16px 16px !important;
+  }
+  .post-modal-content-indent {
+    padding-left: 0 !important;
+  }
+  .post-modal-actions {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+}
+
+/* App main — mobile bottom padding clears the fixed MobileNav (68px) + safe area */
+.app-main {
+  padding-bottom: 32px;
+}
+@media (max-width: 767px) {
+  .app-main {
+    padding-bottom: calc(68px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
 /* Line clamp */
 .clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }

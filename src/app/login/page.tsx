@@ -80,7 +80,7 @@ export default function LoginPage() {
         pointerEvents: "none",
       }} />
 
-      <div className="w-full" style={{ maxWidth: 384, position: "relative", zIndex: 1 }}>
+      <div className="w-full" style={{ maxWidth: 384, position: "relative", zIndex: 1, padding: "0 24px" }}>
         {/* Wordmark */}
         <div style={{ textAlign: "center", marginBottom: 36 }}>
           <img src="/logo.jpeg" alt="Vocalize" style={{ width: 80, height: 80, objectFit: "contain", mixBlendMode: "screen", marginBottom: 16, display: "block", margin: "0 auto 16px" }} />

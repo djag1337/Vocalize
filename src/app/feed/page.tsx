@@ -73,17 +73,29 @@ export default async function FeedPage({ searchParams }: { searchParams: Promise
 
   return (
     <AppShell username={session.user.name || ""}>
-      <div className="sticky top-0 z-10 bg-[var(--background)]/85 backdrop-blur-xl -mx-4 md:-mx-6 px-4 md:px-6 border-b border-[var(--border)]">
+      <div
+        className="sticky top-0 z-10"
+        style={{
+          background: "rgba(0,0,0,0.85)",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
+          borderBottom: "1px solid var(--border)",
+        }}
+      >
         <div className="flex">
           {tabs.map(t => (
             <Link
               key={t.mode}
               href={`/feed?sort=${t.mode}`}
-              className={`flex-1 h-[48px] flex items-center justify-center text-[15px] font-semibold transition-all ${
-                sortMode === t.mode
-                  ? "border-b border-[var(--foreground)] text-[var(--foreground)]"
-                  : "border-b border-[rgba(243,245,247,0.15)] text-[var(--muted)] hover:text-[var(--foreground)]"
-              }`}
+              className="flex-1 flex items-center justify-center font-semibold transition-all"
+              style={{
+                height: 48,
+                fontSize: 15,
+                color: sortMode === t.mode ? "var(--foreground)" : "var(--muted)",
+                borderBottom: sortMode === t.mode
+                  ? "2px solid var(--foreground)"
+                  : "2px solid rgba(243,245,247,0.15)",
+              }}
             >
               {t.label}
             </Link>
@@ -110,7 +122,7 @@ export default async function FeedPage({ searchParams }: { searchParams: Promise
           </div>
         </div>
       ) : (
-        <div className="flex flex-col gap-5 pt-10">
+        <div className="flex flex-col" style={{ gap: 20, paddingTop: 40 }}>
           {shaped.map(p => <PostCard key={p.id} post={p} myUserId={userId} />)}
         </div>
       )}

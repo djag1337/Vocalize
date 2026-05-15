@@ -142,6 +142,7 @@ export default function PostModal() {
   return (
     /* ── Backdrop ── */
     <div
+      className="post-modal-backdrop"
       style={{
         position: "fixed", inset: 0, zIndex: 50,
         display: "flex", alignItems: "flex-start", justifyContent: "center",
@@ -154,6 +155,7 @@ export default function PostModal() {
     >
       {/* ── Modal shell ── */}
       <div
+        className="post-modal-shell"
         style={{
           background: "var(--surface-3)",
           border: "1px solid var(--border)",
@@ -207,7 +209,7 @@ export default function PostModal() {
           ) : (
             <>
               {/* ── Post content ── */}
-              <div style={{ padding: "28px 32px 20px 32px" }}>
+              <div className="post-modal-body" style={{ padding: "28px 32px 20px 32px" }}>
                 {/* Author row */}
                 <div style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 16 }}>
                   <div
@@ -244,7 +246,7 @@ export default function PostModal() {
                 </div>
 
                 {/* Title + body — inset to align with author text */}
-                <div style={{ paddingLeft: 56 }}>
+                <div className="post-modal-content-indent" style={{ paddingLeft: 56 }}>
                   <h1
                     style={{
                       fontSize: 20, fontWeight: 700, lineHeight: 1.3,
@@ -290,7 +292,7 @@ export default function PostModal() {
               </div>
 
               {/* ── Action pill ── */}
-              <div style={{ paddingLeft: 32, paddingRight: 32, paddingBottom: 20 }}>
+              <div className="post-modal-actions" style={{ paddingLeft: 32, paddingRight: 32, paddingBottom: 20 }}>
                 <div
                   style={{
                     display: "inline-flex", alignItems: "center", gap: 24,
@@ -347,7 +349,7 @@ export default function PostModal() {
               </div>
 
               {/* ── Comment input ── */}
-              <div style={{ paddingLeft: 32, paddingRight: 32, paddingBottom: 20 }}>
+              <div className="post-modal-actions" style={{ paddingLeft: 32, paddingRight: 32, paddingBottom: 20 }}>
                 <form
                   onSubmit={submitComment}
                   style={{
@@ -431,7 +433,7 @@ export default function PostModal() {
               </div>
 
               {/* ── Comments ── */}
-              <div style={{ paddingLeft: 32, paddingRight: 32, paddingBottom: 32 }}>
+              <div className="post-modal-actions" style={{ paddingLeft: 32, paddingRight: 32, paddingBottom: 32 }}>
                 {/* Section label */}
                 <p
                   style={{

@@ -240,16 +240,15 @@ export default function PostCard({ post, density = "comfortable", myUserId }: Pr
       <div className="flex flex-col items-stretch">
         <article
           onClick={() => !editing && window.dispatchEvent(new CustomEvent("openPostModal", { detail: { id: post.id } }))}
-          className="hover:brightness-110 cursor-pointer flex flex-col transition-all"
+          className="hover:brightness-110 cursor-pointer flex flex-col transition-all post-card-article"
           style={{
-            padding: '28px 36px 0 36px',
             background: 'var(--surface-3)',
             borderRadius: 28,
             boxShadow: '0 6px 32px rgba(0,0,0,0.6)',
           }}
         >
           {/* Author row */}
-          <div className="flex items-start" style={{ gap: 16 }}>
+          <div className="flex items-start post-card-inner" style={{ gap: 16 }}>
             <Link
               href={`/u/${post.author.username}`}
               onClick={e => e.stopPropagation()}
@@ -268,7 +267,7 @@ export default function PostCard({ post, density = "comfortable", myUserId }: Pr
               </div>
             </Link>
             <div className="flex-1" style={{ minWidth: 0 }}>
-              <div className="flex items-center min-w-0 leading-[22px]" style={{ gap: 8 }}>
+              <div className="flex items-center min-w-0" style={{ gap: 8, lineHeight: '22px' }}>
                 <Link
                   href={`/u/${post.author.username}`}
                   onClick={e => e.stopPropagation()}
@@ -330,7 +329,7 @@ export default function PostCard({ post, density = "comfortable", myUserId }: Pr
           </div>
 
           {/* Content */}
-          <div style={{ marginTop: '16px', paddingLeft: '56px', paddingRight: '8px' }}>
+          <div className="post-card-content" style={{ marginTop: '16px' }}>
             {editing ? (
               <div onClick={e => e.stopPropagation()} className="flex flex-col" style={{ gap: 8 }}>
                 <input
@@ -397,7 +396,7 @@ export default function PostCard({ post, density = "comfortable", myUserId }: Pr
           </div>
 
           {/* Divider */}
-          <div style={{ height: 1, background: "var(--border)", margin: "20px -36px 0" }} />
+          <div className="post-card-divider" style={{ height: 1, background: "var(--border)", marginTop: 20 }} />
 
           {/* Action row — lives inside the card */}
           <div

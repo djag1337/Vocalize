@@ -22,7 +22,12 @@ export default function MobileNav() {
   return (
     <nav
       className="md:hidden fixed bottom-0 left-0 right-0 grid grid-cols-5 z-30"
-      style={{ background: '#000000', borderTop: '1px solid var(--border)', height: 68 }}
+      style={{
+        background: '#000000',
+        borderTop: '1px solid var(--border)',
+        height: 'calc(68px + env(safe-area-inset-bottom, 0px))',
+        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+      }}
     >
       {NAV.map(({ href, Icon, IconActive, label }) => {
         const active = pathname === href || (href !== "/feed" && pathname.startsWith(href));
