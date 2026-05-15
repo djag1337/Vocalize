@@ -239,7 +239,7 @@ export default function PostCard({ post, density = "comfortable", myUserId }: Pr
 
       <div className="flex flex-col items-stretch">
         <article
-          onClick={() => !editing && window.dispatchEvent(new CustomEvent("openPostModal", { detail: { id: post.id } }))}
+          onClick={() => !editing && router.push(`/p/${post.id}`)}
           className="hover:brightness-110 cursor-pointer flex flex-col transition-all post-card-article"
           style={{
             background: 'var(--surface-3)',
@@ -421,7 +421,7 @@ export default function PostCard({ post, density = "comfortable", myUserId }: Pr
 
           {/* Comment */}
           <button
-            onClick={() => window.dispatchEvent(new CustomEvent("openPostModal", { detail: { id: post.id } }))}
+            onClick={() => router.push(`/p/${post.id}`)}
             className="flex items-center transition-colors"
             style={{ gap: 6, color: 'var(--muted)' }}
           >

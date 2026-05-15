@@ -1,6 +1,5 @@
 import Sidebar from "./Sidebar";
 import MobileNav from "./MobileNav";
-import PostModal from "./PostModal";
 import TopBar from "./TopBar";
 
 export default function AppShell({
@@ -26,7 +25,6 @@ export default function AppShell({
         </div>
       </div>
       <MobileNav />
-      <PostModal />
     </div>
   );
 }
