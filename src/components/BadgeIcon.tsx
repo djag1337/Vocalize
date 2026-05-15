@@ -53,7 +53,9 @@ export default function BadgeIcon({ icon, name, color, rarity }: Props) {
             <div>
               <p className="text-[14px] font-semibold text-[var(--foreground)]">{name}</p>
               {rarity && (
-                <p className="text-[12px] text-[var(--muted)] capitalize">{rarity}</p>
+                <p style={{ fontSize: 12, color: rarity === "exclusive" ? "#ff69b4" : "var(--muted)", fontWeight: rarity === "exclusive" ? 600 : 400, marginTop: 1 }}>
+                  {rarity === "exclusive" ? "✦ Legendary" : rarity.charAt(0).toUpperCase() + rarity.slice(1)}
+                </p>
               )}
             </div>
           </div>

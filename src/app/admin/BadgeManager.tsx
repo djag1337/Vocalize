@@ -23,11 +23,20 @@ type UserWithBadges = User & {
   badges: { badge: Badge; awardedAt: string }[];
 };
 
+const RARITY_LABELS: Record<string, string> = {
+  common: "Common",
+  rare: "Rare",
+  epic: "Epic",
+  legendary: "Legendary",
+  exclusive: "Legendary",
+};
+
 const RARITY_COLORS: Record<string, string> = {
   common: "#94a3b8",
   rare: "#3b82f6",
   epic: "#a855f7",
   legendary: "#f59e0b",
+  exclusive: "#ff69b4",
 };
 
 export default function BadgeManager({ allBadges }: { allBadges: Badge[] }) {
@@ -437,7 +446,7 @@ export default function BadgeManager({ allBadges }: { allBadges: Badge[] }) {
                               letterSpacing: "0.04em",
                             }}
                           >
-                            {badge.rarity}
+                            {RARITY_LABELS[badge.rarity] ?? badge.rarity}
                           </span>
                         </div>
                         <div style={{ fontSize: 12, color: "var(--muted)", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
@@ -604,6 +613,7 @@ export default function BadgeManager({ allBadges }: { allBadges: Badge[] }) {
                 <option value="rare">Rare</option>
                 <option value="epic">Epic</option>
                 <option value="legendary">Legendary</option>
+                <option value="exclusive">Exclusive (Legendary — Pink)</option>
               </select>
             </div>
           </div>
