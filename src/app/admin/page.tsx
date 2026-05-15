@@ -17,6 +17,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import AppShell from "@/components/AppShell";
+import BadgeManager from "./BadgeManager";
 
 export const dynamic = "force-dynamic";
 
@@ -90,6 +91,7 @@ export default async function AdminPage() {
     users,
     spaces,
     openReports,
+    allBadges,
     recentPosts,
   ] = await Promise.all([
     prisma.user.count(),
@@ -134,6 +136,11 @@ export default async function AdminPage() {
         post: { select: { id: true, title: true } },
         comment: { select: { id: true, content: true, postId: true } },
       },
+    }),
+
+    // All badges
+    prisma.badge.findMany({
+      orderBy: { createdAt: "asc" },
     }),
 
     // Recent posts (last 25)
@@ -636,6 +643,11 @@ export default async function AdminPage() {
               })
             )}
           </div>
+        </section>
+
+        {/* ── Badge Management ─────────────────────────────────────────── */}
+        <section style={{ marginBottom: 40 }}>
+          <BadgeManager allBadges={allBadges} />
         </section>
 
         {/* ── Recent Posts ─────────────────────────────────────────────── */}
