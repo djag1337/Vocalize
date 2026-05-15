@@ -6,6 +6,7 @@ export async function POST(req: Request) {
   try {
     const { email, username, password } = await req.json();
     if (!email || !username || !password) return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+    if (!/^[a-zA-Z0-9_]{2,30}$/.test(username)) return NextResponse.json({ error: "Username must be 2–30 characters: letters, numbers, underscores only" }, { status: 400 });
     if (password.length < 6) return NextResponse.json({ error: "Password too short (min 6)" }, { status: 400 });
     const existing = await prisma.user.findFirst({ where: { OR: [{ email }, { username }] } });
     if (existing) return NextResponse.json({ error: "Email or username taken" }, { status: 409 });
