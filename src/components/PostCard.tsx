@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Heart, MessageCircle, Send, MoreHorizontal, Pencil, Flag, Bookmark } from "lucide-react";
+import { Heart, MessageCircle, Send, MoreHorizontal, Pencil, Flag, Bookmark, Trash2 } from "lucide-react";
 import MarkdownRenderer from "./MarkdownRenderer";
 
 type Props = {
@@ -68,6 +68,11 @@ export default function PostCard({ post, density = "comfortable", myUserId }: Pr
   const [showReport, setShowReport] = useState(false);
   const [reportReason, setReportReason] = useState("");
   const [reportSent, setReportSent] = useState(false);
+
+  // Delete state
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleted, setDeleted] = useState(false);
 
   async function toggleLike() {
     const newVote = myVote === 1 ? 0 : 1;
@@ -152,12 +157,84 @@ export default function PostCard({ post, density = "comfortable", myUserId }: Pr
     }, 1500);
   }
 
+  async function handleDelete() {
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/posts/${post.id}`, { method: "DELETE" });
+      if (res.ok) {
+        setDeleted(true);
+        router.refresh();
+      }
+    } finally {
+      setDeleting(false);
+      setConfirmDelete(false);
+    }
+  }
+
   const isAuthor = myUserId && post.author.id && myUserId === post.author.id;
   const accentColor = post.author.accentColor;
   const liked = myVote === 1;
 
+  if (deleted) return null;
+
   return (
     <>
+      {/* Delete confirm modal */}
+      {confirmDelete && (
+        <div
+          style={{
+            position: "fixed", inset: 0, zIndex: 100,
+            background: "rgba(0,0,0,0.7)",
+            backdropFilter: "blur(8px)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            padding: "0 16px",
+          }}
+          onClick={() => setConfirmDelete(false)}
+        >
+          <div
+            style={{
+              background: "var(--surface-2)",
+              border: "1px solid var(--border)",
+              borderRadius: 20,
+              padding: "24px 24px 20px",
+              width: "100%", maxWidth: 360,
+              boxShadow: "0 8px 40px rgba(0,0,0,0.6)",
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <p style={{ fontSize: 16, fontWeight: 700, color: "var(--foreground)", marginBottom: 8 }}>Delete post?</p>
+            <p style={{ fontSize: 14, color: "var(--muted)", marginBottom: 20 }}>This can&apos;t be undone.</p>
+            <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+              <button
+                type="button"
+                onClick={() => setConfirmDelete(false)}
+                style={{
+                  padding: "8px 18px", borderRadius: 10, fontSize: 14,
+                  color: "var(--muted)", background: "transparent",
+                  border: "1px solid var(--border)", cursor: "pointer",
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleDelete}
+                disabled={deleting}
+                style={{
+                  padding: "8px 18px", borderRadius: 10, fontSize: 14,
+                  fontWeight: 600, color: "#fff",
+                  background: "var(--red)",
+                  border: "none", cursor: "pointer",
+                  opacity: deleting ? 0.6 : 1,
+                }}
+              >
+                {deleting ? "Deleting…" : "Delete"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Report modal */}
       {showReport && (
         <div
@@ -500,6 +577,28 @@ export default function PostCard({ post, density = "comfortable", myUserId }: Pr
                     onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
                   >
                     <Pencil size={15} strokeWidth={1.5} /> Edit
+                  </button>
+                )}
+                {isAuthor && (
+                  <button
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowMenu(false); setConfirmDelete(true); }}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      width: "100%",
+                      padding: "10px 16px",
+                      fontSize: 14,
+                      color: "var(--red)",
+                      background: "transparent",
+                      border: "none",
+                      cursor: "pointer",
+                      textAlign: "left",
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.background = "var(--surface-3)")}
+                    onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                  >
+                    <Trash2 size={15} strokeWidth={1.5} /> Delete
                   </button>
                 )}
                 <button

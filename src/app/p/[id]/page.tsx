@@ -7,6 +7,7 @@ import AppShell from "@/components/AppShell";
 import VoteButtons from "@/components/VoteButtons";
 import CommentSection from "./CommentSection";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
+import DeletePostButton from "./DeletePostButton";
 
 export const dynamic = "force-dynamic";
 
@@ -79,6 +80,8 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
   if (!post) notFound();
 
   const userId = session.user.id;
+  const isAdmin = session.user.name?.toLowerCase() === "djagdev";
+  const canDelete = userId === post.author.id || isAdmin;
   const score = post.votes.reduce((s, v) => s + v.value, 0);
   const myVote = post.votes.find(v => v.userId === userId)?.value ?? 0;
 
@@ -108,7 +111,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
           }}
         >
           {/* Author row */}
-          <div className="flex items-start" style={{ gap: "14px" }}>
+          <div className="flex items-start" style={{ gap: "14px", position: "relative" }}>
             <Link href={`/u/${post.author.username}`} className="shrink-0">
               <div
                 className="flex items-center justify-center font-bold"
@@ -126,7 +129,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
 
             <div className="flex-1 min-w-0">
               {/* Name + badge row */}
-              <div className="flex items-center flex-wrap" style={{ gap: "6px" }}>
+              <div className="flex items-center flex-wrap" style={{ gap: "6px", paddingRight: canDelete ? "40px" : "0" }}>
                 <Link
                   href={`/u/${post.author.username}`}
                   className="font-semibold hover:underline"
@@ -158,6 +161,11 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
                 <span>{timeAgo(post.createdAt)}</span>
               </div>
             </div>
+            {canDelete && (
+              <div style={{ position: "absolute", top: 0, right: 0 }}>
+                <DeletePostButton postId={post.id} />
+              </div>
+            )}
           </div>
 
           {/* Post title + body */}

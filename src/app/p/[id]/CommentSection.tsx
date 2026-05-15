@@ -64,89 +64,6 @@ export default function CommentSection({
         Replies
       </p>
 
-      {/* ── Reply input ── */}
-      <form
-        onSubmit={submit}
-        className="flex flex-col"
-        style={{
-          padding: "14px 14px 14px 18px",
-          gap: "10px",
-          background: "var(--surface-3)",
-          borderRadius: 20,
-          boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
-        }}
-      >
-        {/* Preview or editor */}
-        {previewing ? (
-          <div
-            className="flex-1 leading-relaxed"
-            style={{ minHeight: "44px", paddingTop: "2px", fontSize: 15, color: "var(--foreground)" }}
-          >
-            {text.trim() ? (
-              <MarkdownRenderer content={text} />
-            ) : (
-              <span style={{ color: "var(--muted)" }}>Nothing to preview</span>
-            )}
-          </div>
-        ) : (
-          <textarea
-            value={text}
-            onChange={e => setText(e.target.value)}
-            onKeyDown={e => {
-              if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
-                e.preventDefault();
-                submit(e as unknown as React.FormEvent);
-              }
-            }}
-            placeholder="Write a reply…"
-            rows={2}
-            className="flex-1 resize-none leading-relaxed placeholder:text-[var(--muted)]"
-            style={{
-              background: "transparent",
-              border: "none",
-              outline: "none",
-              fontSize: 15,
-              color: "var(--foreground)",
-              minHeight: "44px",
-              maxHeight: "160px",
-            }}
-          />
-        )}
-
-        {/* Bottom row: preview toggle + send */}
-        <div className="flex items-center justify-between" style={{ marginTop: "2px" }}>
-          <button
-            type="button"
-            onClick={() => setPreviewing(p => !p)}
-            className="font-medium transition-colors"
-            style={{
-              fontSize: 12,
-              color: previewing ? "var(--foreground)" : "var(--muted)",
-              background: previewing ? "var(--surface-2)" : "transparent",
-              borderRadius: "8px",
-              padding: "3px 10px",
-              border: "1px solid var(--border)",
-            }}
-          >
-            {previewing ? "Edit" : "Preview"}
-          </button>
-          <button
-            type="submit"
-            disabled={busy || !text.trim()}
-            className="shrink-0 flex items-center justify-center transition-opacity disabled:opacity-25"
-            style={{
-              width: 36,
-              height: 36,
-              borderRadius: 9999,
-              background: "var(--foreground)",
-            }}
-            title="Send reply (⌘↵)"
-          >
-            <Send size={15} style={{ color: "var(--background)", marginLeft: "1px" }} />
-          </button>
-        </div>
-      </form>
-
       {/* ── Comment list / empty state ── */}
       {comments.length === 0 ? (
         <div
@@ -219,6 +136,90 @@ export default function CommentSection({
           })}
         </div>
       )}
+
+      {/* ── Reply input ── */}
+      <form
+        onSubmit={submit}
+        className="flex flex-col"
+        style={{
+          padding: "14px 14px 14px 18px",
+          gap: "10px",
+          background: "var(--surface-3)",
+          borderRadius: 20,
+          boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
+        }}
+      >
+        {/* Preview or editor */}
+        {previewing ? (
+          <div
+            className="flex-1 leading-relaxed"
+            style={{ minHeight: "44px", paddingTop: "2px", fontSize: 15, color: "var(--foreground)" }}
+          >
+            {text.trim() ? (
+              <MarkdownRenderer content={text} />
+            ) : (
+              <span style={{ color: "var(--muted)" }}>Nothing to preview</span>
+            )}
+          </div>
+        ) : (
+          <textarea
+            value={text}
+            onChange={e => setText(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault();
+                submit(e as unknown as React.FormEvent);
+              }
+            }}
+            placeholder="Write a reply…"
+            rows={2}
+            className="flex-1 resize-none leading-relaxed"
+            style={{
+              background: "transparent",
+              border: "none",
+              outline: "none",
+              fontSize: 15,
+              color: "var(--foreground)",
+              minHeight: "44px",
+              maxHeight: "160px",
+              caretColor: "var(--foreground)",
+            }}
+          />
+        )}
+
+        {/* Bottom row: preview toggle + send */}
+        <div className="flex items-center justify-between" style={{ marginTop: "2px" }}>
+          <button
+            type="button"
+            onClick={() => setPreviewing(p => !p)}
+            className="font-medium transition-colors"
+            style={{
+              fontSize: 12,
+              color: previewing ? "var(--foreground)" : "var(--muted)",
+              background: previewing ? "var(--surface-2)" : "transparent",
+              borderRadius: "8px",
+              padding: "3px 10px",
+              border: "1px solid var(--border)",
+            }}
+          >
+            {previewing ? "Edit" : "Preview"}
+          </button>
+          <button
+            type="submit"
+            disabled={busy || !text.trim()}
+            className="shrink-0 flex items-center justify-center transition-opacity disabled:opacity-25"
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: 9999,
+              background: "var(--foreground)",
+            }}
+            title="Send reply (⌘↵)"
+          >
+            <Send size={15} style={{ color: "var(--background)", marginLeft: "1px" }} />
+          </button>
+        </div>
+      </form>
     </section>
   );
 }
