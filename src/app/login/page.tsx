@@ -1,10 +1,10 @@
 "use client";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
-export default function LoginPage() {
+function LoginForm() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
@@ -21,6 +21,51 @@ export default function LoginPage() {
     router.push(next); router.refresh();
   }
 
+  return (
+    <>
+      <form onSubmit={submit} className="flex flex-col" style={{ gap: 12 }}>
+        <input
+          className="input"
+          placeholder="Email"
+          type="email"
+          value={form.email}
+          onChange={e => setForm({ ...form, email: e.target.value })}
+        />
+        <input
+          className="input"
+          placeholder="Password"
+          type="password"
+          value={form.password}
+          onChange={e => setForm({ ...form, password: e.target.value })}
+        />
+        {err && <p style={{ color: "var(--red)", fontSize: 13 }}>{err}</p>}
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full font-semibold transition-opacity"
+          style={{ height: 48, background: "var(--accent)", opacity: loading ? 0.6 : 1, marginTop: 4, borderRadius: 9999, color: "#fff", fontSize: 15 }}
+        >
+          {loading ? "Signing in..." : "Log in"}
+        </button>
+      </form>
+
+      <div className="flex items-center justify-between" style={{ marginTop: 24 }}>
+        <p style={{ fontSize: 13, color: "var(--muted)", margin: 0 }}>
+          No account?{" "}
+          <Link href="/register" className="font-medium hover:underline" style={{ color: "var(--foreground)" }}>
+            Sign up
+          </Link>
+        </p>
+        <Link href="/forgot-password" style={{ fontSize: 13, color: "var(--muted)", textDecoration: "none" }}
+          className="hover:underline">
+          Forgot password?
+        </Link>
+      </div>
+    </>
+  );
+}
+
+export default function LoginPage() {
   return (
     <main
       className="min-h-screen flex items-center justify-center"
@@ -52,44 +97,9 @@ export default function LoginPage() {
           <p style={{ color: "var(--muted)", fontSize: 14, marginTop: 6 }}>Real conversations. Real people.</p>
         </div>
 
-        <form onSubmit={submit} className="flex flex-col" style={{ gap: 12 }}>
-          <input
-            className="input"
-            placeholder="Email"
-            type="email"
-            value={form.email}
-            onChange={e => setForm({ ...form, email: e.target.value })}
-          />
-          <input
-            className="input"
-            placeholder="Password"
-            type="password"
-            value={form.password}
-            onChange={e => setForm({ ...form, password: e.target.value })}
-          />
-          {err && <p style={{ color: "var(--red)", fontSize: 13 }}>{err}</p>}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full font-semibold transition-opacity"
-            style={{ height: 48, background: "var(--accent)", opacity: loading ? 0.6 : 1, marginTop: 4, borderRadius: 9999, color: "#fff", fontSize: 15 }}
-          >
-            {loading ? "Signing in..." : "Log in"}
-          </button>
-        </form>
-
-        <div className="flex items-center justify-between" style={{ marginTop: 24 }}>
-          <p style={{ fontSize: 13, color: "var(--muted)", margin: 0 }}>
-            No account?{" "}
-            <Link href="/register" className="font-medium hover:underline" style={{ color: "var(--foreground)" }}>
-              Sign up
-            </Link>
-          </p>
-          <Link href="/forgot-password" style={{ fontSize: 13, color: "var(--muted)", textDecoration: "none" }}
-            className="hover:underline">
-            Forgot password?
-          </Link>
-        </div>
+        <Suspense fallback={null}>
+          <LoginForm />
+        </Suspense>
       </div>
     </main>
   );
