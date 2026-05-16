@@ -28,7 +28,7 @@ export default function Sidebar({ username }: { username: string }) {
   return (
     <aside
       className="hidden md:flex flex-col items-center fixed left-0 top-0 z-30"
-      style={{ height: '100vh', width: 76, background: '#000000', borderRight: '1px solid var(--border)' }}
+      style={{ height: '100vh', width: 76, background: 'var(--sidebar-bg, #000000)', borderRight: '1px solid var(--border)' }}
     >
       {/* Logo */}
       <div style={{ paddingTop: 28, paddingBottom: 20 }}>

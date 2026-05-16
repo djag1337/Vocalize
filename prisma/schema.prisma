@@ -21,6 +21,11 @@ model User {
   themeColor       String    @default("#a855f7")
   accentColor      String    @default("#ec4899")
   backgroundColor  String    @default("#0a0a0c")
+  cardColor        String    @default("#111113")
+  foregroundColor  String    @default("#f5f5f7")
+  mutedColor       String    @default("#8e8e93")
+  borderColor      String    @default("#ffffff")
+  sidebarColor     String    @default("#0d0d0d")
   fontFamily       String    @default("inter")
   feedDensity   String    @default("comfortable") // comfortable | compact | card
   nowPlaying    String?   // "Artist — Song" or a Spotify track URL

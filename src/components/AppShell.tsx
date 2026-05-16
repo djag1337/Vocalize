@@ -40,6 +40,11 @@ export default async function AppShell({
   let accentColor = "#ec4899";
   let themeColor = "#a855f7";
   let backgroundColor = "#0a0a0c";
+  let cardColor = "#111113";
+  let foregroundColor = "#f5f5f7";
+  let mutedColor = "#8e8e93";
+  let borderColor = "#ffffff";
+  let sidebarColor = "#0d0d0d";
   let fontFamily = "inter";
 
   if (session?.user?.id) {
@@ -49,6 +54,11 @@ export default async function AppShell({
         accentColor: true,
         themeColor: true,
         backgroundColor: true,
+        cardColor: true,
+        foregroundColor: true,
+        mutedColor: true,
+        borderColor: true,
+        sidebarColor: true,
         fontFamily: true,
       },
     });
@@ -56,6 +66,11 @@ export default async function AppShell({
       accentColor = prefs.accentColor ?? "#ec4899";
       themeColor = prefs.themeColor ?? "#a855f7";
       backgroundColor = prefs.backgroundColor ?? "#0a0a0c";
+      cardColor = prefs.cardColor ?? "#111113";
+      foregroundColor = prefs.foregroundColor ?? "#f5f5f7";
+      mutedColor = prefs.mutedColor ?? "#8e8e93";
+      borderColor = prefs.borderColor ?? "#ffffff";
+      sidebarColor = prefs.sidebarColor ?? "#0d0d0d";
       fontFamily = prefs.fontFamily ?? "inter";
     }
   }
@@ -65,7 +80,18 @@ export default async function AppShell({
   return (
     <>
       {/* Override CSS vars at root level so all elements (including body) pick them up */}
-      <style>{`:root { --background: ${backgroundColor}; --font-body: ${font.stack}; }`}</style>
+      <style>{`
+        :root {
+          --background: ${backgroundColor};
+          --font-body: ${font.stack};
+          --card: ${cardColor};
+          --foreground: ${foregroundColor};
+          --muted: ${mutedColor};
+          --border: ${borderColor}12;
+          --border-2: ${borderColor}0d;
+          --sidebar-bg: ${sidebarColor};
+        }
+      `}</style>
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       <link rel="stylesheet" href={font.url} />

@@ -22,6 +22,11 @@ export default async function SettingsPage() {
       themeColor: true,
       accentColor: true,
       backgroundColor: true,
+      cardColor: true,
+      foregroundColor: true,
+      mutedColor: true,
+      borderColor: true,
+      sidebarColor: true,
       fontFamily: true,
 
       displayBadgeId: true,

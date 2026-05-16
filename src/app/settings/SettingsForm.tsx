@@ -2,6 +2,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ImageIcon } from "lucide-react";
+import ColorPicker from "@/components/ColorPicker";
 
 type BadgeEntry = {
   id: string;
@@ -17,15 +18,17 @@ type Initial = {
   themeColor: string;
   accentColor: string;
   backgroundColor: string;
+  cardColor: string;
+  foregroundColor: string;
+  mutedColor: string;
+  borderColor: string;
+  sidebarColor: string;
   fontFamily: string;
   displayBadgeId: string | null;
   badges: BadgeEntry[];
   nowPlaying: string | null;
 };
 
-const THEME_SWATCHES = ["#a855f7", "#3b82f6", "#10b981", "#f97316", "#ef4444", "#eab308"];
-const ACCENT_SWATCHES = ["#ec4899", "#06b6d4", "#84cc16", "#f59e0b", "#6366f1", "#14b8a6"];
-const BG_SWATCHES = ["#0a0a0c", "#000000", "#0d0d14", "#0a0f1a", "#100a14", "#0a1210"];
 
 const FONT_OPTIONS = [
   { slug: "inter",    name: "Inter",    stack: "Inter, sans-serif" },
@@ -83,6 +86,11 @@ export default function SettingsForm({ initial }: { initial: Initial }) {
   const [themeColor, setThemeColor] = useState(initial.themeColor);
   const [accentColor, setAccentColor] = useState(initial.accentColor);
   const [backgroundColor, setBackgroundColor] = useState(initial.backgroundColor ?? "#0a0a0c");
+  const [cardColor, setCardColor] = useState(initial.cardColor ?? "#111113");
+  const [foregroundColor, setForegroundColor] = useState(initial.foregroundColor ?? "#f5f5f7");
+  const [mutedColor, setMutedColor] = useState(initial.mutedColor ?? "#8e8e93");
+  const [borderColor, setBorderColor] = useState(initial.borderColor ?? "#ffffff");
+  const [sidebarColor, setSidebarColor] = useState(initial.sidebarColor ?? "#0d0d0d");
   const [fontFamily, setFontFamily] = useState(initial.fontFamily ?? "inter");
   const [displayBadgeId, setDisplayBadgeId] = useState(initial.displayBadgeId ?? "");
   const [nowPlaying, setNowPlaying] = useState(initial.nowPlaying ?? "");
@@ -90,9 +98,6 @@ export default function SettingsForm({ initial }: { initial: Initial }) {
   const [msg, setMsg] = useState<string | null>(null);
   const [uploading, setUploading] = useState<"avatar" | "banner" | null>(null);
 
-  const themeColorInputRef = useRef<HTMLInputElement>(null);
-  const accentColorInputRef = useRef<HTMLInputElement>(null);
-  const bgColorInputRef = useRef<HTMLInputElement>(null);
   const avatarFileRef = useRef<HTMLInputElement>(null);
   const bannerFileRef = useRef<HTMLInputElement>(null);
 
@@ -125,6 +130,11 @@ export default function SettingsForm({ initial }: { initial: Initial }) {
         themeColor,
         accentColor,
         backgroundColor,
+        cardColor,
+        foregroundColor,
+        mutedColor,
+        borderColor,
+        sidebarColor,
         fontFamily,
         displayBadgeId,
         nowPlaying,
@@ -308,182 +318,98 @@ export default function SettingsForm({ initial }: { initial: Initial }) {
 
       {/* ── Appearance ── */}
       <Card>
-        <SectionLabel>Appearance</SectionLabel>
-        <p style={{ marginBottom: 20, fontSize: 13, color: "var(--muted)", marginTop: -8 }}>
-          These settings apply across your entire Vocalize experience.
+        <SectionLabel>Colors</SectionLabel>
+        <p style={{ marginBottom: 24, fontSize: 13, color: "var(--muted)", marginTop: -8 }}>
+          Customize every aspect of your Vocalize experience.
         </p>
 
-        {/* Colors row */}
+        {/* Group 1 — Brand Colors */}
+        <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--muted)", marginBottom: 14 }}>
+          Brand Colors
+        </p>
         <div
-          className="grid"
-          style={{ gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 20 }}
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+            gap: 20,
+            marginBottom: 28,
+          }}
         >
-          {/* Theme color */}
-          <div className="flex flex-col" style={{ gap: 10 }}>
-            <span style={{ fontSize: 13, color: "var(--muted)" }}>Theme color</span>
-            <button
-              type="button"
-              onClick={() => themeColorInputRef.current?.click()}
-              className="transition cursor-pointer"
-              style={{
-                width: 64,
-                height: 64,
-                borderRadius: 14,
-                border: "2px solid rgba(255,255,255,0.2)",
-                background: `linear-gradient(135deg, ${themeColor}, ${themeColor}99)`,
-              }}
-              aria-label="Pick theme color"
-            />
-            <input ref={themeColorInputRef} type="color" value={themeColor} onChange={(e) => setThemeColor(e.target.value)} className="sr-only" />
-            <input
-              type="text"
-              value={themeColor}
-              onChange={(e) => setThemeColor(e.target.value)}
-              className="input font-mono"
-              style={{ fontSize: 12 }}
-              placeholder="#a855f7"
-            />
-            <div className="flex flex-wrap" style={{ gap: 6 }}>
-              {THEME_SWATCHES.map((c) => (
-                <button
-                  key={c}
-                  type="button"
-                  onClick={() => setThemeColor(c)}
-                  className="transition hover:scale-110"
-                  style={{
-                    width: 22,
-                    height: 22,
-                    borderRadius: 9999,
-                    borderWidth: 2,
-                    borderStyle: "solid",
-                    background: c,
-                    borderColor: themeColor === c ? "white" : "transparent",
-                  }}
-                  aria-label={c}
-                />
-              ))}
-            </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <span style={{ fontSize: 12, color: "var(--muted)" }}>Accent</span>
+            <ColorPicker value={accentColor} onChange={setAccentColor} label="Accent" />
           </div>
-
-          {/* Accent color */}
-          <div className="flex flex-col" style={{ gap: 10 }}>
-            <span style={{ fontSize: 13, color: "var(--muted)" }}>Accent color</span>
-            <button
-              type="button"
-              onClick={() => accentColorInputRef.current?.click()}
-              className="transition cursor-pointer"
-              style={{
-                width: 64,
-                height: 64,
-                borderRadius: 14,
-                border: "2px solid rgba(255,255,255,0.2)",
-                background: `linear-gradient(135deg, ${accentColor}, ${accentColor}99)`,
-              }}
-              aria-label="Pick accent color"
-            />
-            <input ref={accentColorInputRef} type="color" value={accentColor} onChange={(e) => setAccentColor(e.target.value)} className="sr-only" />
-            <input
-              type="text"
-              value={accentColor}
-              onChange={(e) => setAccentColor(e.target.value)}
-              className="input font-mono"
-              style={{ fontSize: 12 }}
-              placeholder="#ec4899"
-            />
-            <div className="flex flex-wrap" style={{ gap: 6 }}>
-              {ACCENT_SWATCHES.map((c) => (
-                <button
-                  key={c}
-                  type="button"
-                  onClick={() => setAccentColor(c)}
-                  className="transition hover:scale-110"
-                  style={{
-                    width: 22,
-                    height: 22,
-                    borderRadius: 9999,
-                    borderWidth: 2,
-                    borderStyle: "solid",
-                    background: c,
-                    borderColor: accentColor === c ? "white" : "transparent",
-                  }}
-                  aria-label={c}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Background color */}
-          <div className="flex flex-col" style={{ gap: 10 }}>
-            <span style={{ fontSize: 13, color: "var(--muted)" }}>Background</span>
-            <button
-              type="button"
-              onClick={() => bgColorInputRef.current?.click()}
-              className="transition cursor-pointer"
-              style={{
-                width: 64,
-                height: 64,
-                borderRadius: 14,
-                border: "2px solid rgba(255,255,255,0.2)",
-                background: backgroundColor,
-                position: "relative",
-              }}
-              aria-label="Pick background color"
-            >
-              {/* Grid pattern to show darkness */}
-              <span
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  borderRadius: 12,
-                  background: "repeating-conic-gradient(rgba(255,255,255,0.06) 0% 25%, transparent 0% 50%) 0 0 / 12px 12px",
-                }}
-              />
-            </button>
-            <input ref={bgColorInputRef} type="color" value={backgroundColor} onChange={(e) => setBackgroundColor(e.target.value)} className="sr-only" />
-            <input
-              type="text"
-              value={backgroundColor}
-              onChange={(e) => setBackgroundColor(e.target.value)}
-              className="input font-mono"
-              style={{ fontSize: 12 }}
-              placeholder="#0a0a0c"
-            />
-            <div className="flex flex-wrap" style={{ gap: 6 }}>
-              {BG_SWATCHES.map((c) => (
-                <button
-                  key={c}
-                  type="button"
-                  onClick={() => setBackgroundColor(c)}
-                  className="transition hover:scale-110"
-                  style={{
-                    width: 22,
-                    height: 22,
-                    borderRadius: 9999,
-                    borderWidth: 2,
-                    borderStyle: "solid",
-                    background: c,
-                    borderColor: backgroundColor === c ? "white" : "rgba(255,255,255,0.25)",
-                  }}
-                  aria-label={c}
-                />
-              ))}
-            </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <span style={{ fontSize: 12, color: "var(--muted)" }}>Theme / Gradient</span>
+            <ColorPicker value={themeColor} onChange={setThemeColor} label="Theme" />
           </div>
         </div>
 
-        {/* Gradient preview */}
+        {/* Gradient preview strip */}
         <div
           style={{
-            height: 32,
-            marginTop: 20,
-            borderRadius: 14,
+            height: 28,
+            marginBottom: 28,
+            borderRadius: 10,
             border: "1px solid rgba(255,255,255,0.1)",
             background: `linear-gradient(135deg, ${themeColor}, ${accentColor})`,
           }}
         />
 
+        {/* Group 2 — Surface Colors */}
+        <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--muted)", marginBottom: 14 }}>
+          Surface Colors
+        </p>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+            gap: 20,
+            marginBottom: 28,
+          }}
+        >
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <span style={{ fontSize: 12, color: "var(--muted)" }}>Background</span>
+            <ColorPicker value={backgroundColor} onChange={setBackgroundColor} label="Background" />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <span style={{ fontSize: 12, color: "var(--muted)" }}>Cards</span>
+            <ColorPicker value={cardColor} onChange={setCardColor} label="Cards" />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <span style={{ fontSize: 12, color: "var(--muted)" }}>Sidebar</span>
+            <ColorPicker value={sidebarColor} onChange={setSidebarColor} label="Sidebar" />
+          </div>
+        </div>
+
+        {/* Group 3 — Text & Borders */}
+        <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--muted)", marginBottom: 14 }}>
+          Text &amp; Borders
+        </p>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+            gap: 20,
+            marginBottom: 28,
+          }}
+        >
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <span style={{ fontSize: 12, color: "var(--muted)" }}>Text</span>
+            <ColorPicker value={foregroundColor} onChange={setForegroundColor} label="Text" />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <span style={{ fontSize: 12, color: "var(--muted)" }}>Muted text</span>
+            <ColorPicker value={mutedColor} onChange={setMutedColor} label="Muted text" />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <span style={{ fontSize: 12, color: "var(--muted)" }}>Borders</span>
+            <ColorPicker value={borderColor} onChange={setBorderColor} label="Borders" />
+          </div>
+        </div>
+
         {/* Font selector */}
-        <div style={{ marginTop: 24 }}>
+        <div style={{ marginTop: 4 }}>
           <span style={{ fontSize: 13, color: "var(--muted)", display: "block", marginBottom: 12 }}>Font</span>
           <div className="flex flex-wrap" style={{ gap: 8 }}>
             {FONT_OPTIONS.map((f) => {
