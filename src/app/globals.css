@@ -6,6 +6,7 @@
 
 :root {
   --background: #000000;
+  --font-body: Inter, sans-serif;
   --surface: #0d0d0d;
   --surface-2: #0d0d0d;
   --card: #111113;
@@ -31,7 +32,7 @@
 html, body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: 15px;
   line-height: 1.3333;
   -webkit-font-smoothing: antialiased;
@@ -47,7 +48,7 @@ html, body {
 .input {
   width: 100%; background: transparent; border: 1px solid var(--border);
   border-radius: 12px; padding: 12px 16px; color: var(--foreground);
-  font-size: 15px; font-family: var(--font-sans); outline: none;
+  font-size: 15px; font-family: inherit; outline: none;
   transition: border-color 0.15s;
 }
 .input:focus { border-color: var(--border-2); }
@@ -57,7 +58,7 @@ html, body {
   display: inline-flex; align-items: center; justify-content: center;
   padding: 10px 24px; border-radius: 9999px; font-size: 15px; font-weight: 600;
   background: var(--foreground); color: var(--background); border: none;
-  cursor: pointer; transition: opacity 0.15s; font-family: var(--font-sans);
+  cursor: pointer; transition: opacity 0.15s; font-family: inherit;
 }
 .btn-primary:hover { opacity: 0.85; }
 .btn-primary:disabled { opacity: 0.3; cursor: not-allowed; }
@@ -66,7 +67,7 @@ html, body {
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
   padding: 8px 16px; border-radius: 9999px; font-size: 14px; font-weight: 500;
   background: transparent; color: var(--muted); border: 1px solid var(--border);
-  cursor: pointer; transition: all 0.15s; font-family: var(--font-sans);
+  cursor: pointer; transition: all 0.15s; font-family: inherit;
 }
 .btn-ghost:hover { background: var(--surface-2); color: var(--foreground); border-color: var(--border-2); }
 

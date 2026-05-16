@@ -18,8 +18,10 @@ model User {
   bio           String?
   avatarUrl     String?
   bannerUrl     String?
-  themeColor    String    @default("#a855f7")
-  accentColor   String    @default("#ec4899")
+  themeColor       String    @default("#a855f7")
+  accentColor      String    @default("#ec4899")
+  backgroundColor  String    @default("#0a0a0c")
+  fontFamily       String    @default("inter")
   feedDensity   String    @default("comfortable") // comfortable | compact | card
   nowPlaying    String?   // "Artist — Song" or a Spotify track URL
   createdAt     DateTime  @default(now())

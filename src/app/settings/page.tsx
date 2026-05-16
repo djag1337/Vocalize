@@ -21,6 +21,8 @@ export default async function SettingsPage() {
       bannerUrl: true,
       themeColor: true,
       accentColor: true,
+      backgroundColor: true,
+      fontFamily: true,
 
       displayBadgeId: true,
       nowPlaying: true,
@@ -37,6 +39,10 @@ export default async function SettingsPage() {
 
   return (
     <AppShell username={session.user.name || user.username} title="Settings">
+      {/* Preload all font options so the font picker cards render correctly */}
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Geist:wght@400;500;600;700;900&family=Playfair+Display:wght@400;500;600;700;900&family=DM+Sans:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" />
       <div className="max-w-lg mx-auto" style={{ padding: "28px 20px 40px 20px" }}>
         <SettingsForm initial={user} />
       </div>

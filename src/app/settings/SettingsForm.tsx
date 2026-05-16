@@ -16,6 +16,8 @@ type Initial = {
   bannerUrl: string | null;
   themeColor: string;
   accentColor: string;
+  backgroundColor: string;
+  fontFamily: string;
   displayBadgeId: string | null;
   badges: BadgeEntry[];
   nowPlaying: string | null;
@@ -23,6 +25,15 @@ type Initial = {
 
 const THEME_SWATCHES = ["#a855f7", "#3b82f6", "#10b981", "#f97316", "#ef4444", "#eab308"];
 const ACCENT_SWATCHES = ["#ec4899", "#06b6d4", "#84cc16", "#f59e0b", "#6366f1", "#14b8a6"];
+const BG_SWATCHES = ["#0a0a0c", "#000000", "#0d0d14", "#0a0f1a", "#100a14", "#0a1210"];
+
+const FONT_OPTIONS = [
+  { slug: "inter",    name: "Inter",    stack: "Inter, sans-serif" },
+  { slug: "geist",    name: "Geist",    stack: "Geist, sans-serif" },
+  { slug: "playfair", name: "Playfair", stack: "'Playfair Display', serif" },
+  { slug: "dm-sans",  name: "DM Sans",  stack: "'DM Sans', sans-serif" },
+  { slug: "mono",     name: "Mono",     stack: "'JetBrains Mono', monospace" },
+];
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
@@ -71,6 +82,8 @@ export default function SettingsForm({ initial }: { initial: Initial }) {
   const [bannerUrl, setBannerUrl] = useState(initial.bannerUrl ?? "");
   const [themeColor, setThemeColor] = useState(initial.themeColor);
   const [accentColor, setAccentColor] = useState(initial.accentColor);
+  const [backgroundColor, setBackgroundColor] = useState(initial.backgroundColor ?? "#0a0a0c");
+  const [fontFamily, setFontFamily] = useState(initial.fontFamily ?? "inter");
   const [displayBadgeId, setDisplayBadgeId] = useState(initial.displayBadgeId ?? "");
   const [nowPlaying, setNowPlaying] = useState(initial.nowPlaying ?? "");
   const [saving, setSaving] = useState(false);
@@ -79,6 +92,7 @@ export default function SettingsForm({ initial }: { initial: Initial }) {
 
   const themeColorInputRef = useRef<HTMLInputElement>(null);
   const accentColorInputRef = useRef<HTMLInputElement>(null);
+  const bgColorInputRef = useRef<HTMLInputElement>(null);
   const avatarFileRef = useRef<HTMLInputElement>(null);
   const bannerFileRef = useRef<HTMLInputElement>(null);
 
@@ -110,6 +124,8 @@ export default function SettingsForm({ initial }: { initial: Initial }) {
         bannerUrl,
         themeColor,
         accentColor,
+        backgroundColor,
+        fontFamily,
         displayBadgeId,
         nowPlaying,
       }),
@@ -294,11 +310,13 @@ export default function SettingsForm({ initial }: { initial: Initial }) {
       <Card>
         <SectionLabel>Appearance</SectionLabel>
         <p style={{ marginBottom: 20, fontSize: 13, color: "var(--muted)", marginTop: -8 }}>
-          These colors apply across your entire Vocalize experience.
+          These settings apply across your entire Vocalize experience.
         </p>
+
+        {/* Colors row */}
         <div
           className="grid"
-          style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 24 }}
+          style={{ gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 20 }}
         >
           {/* Theme color */}
           <div className="flex flex-col" style={{ gap: 10 }}>
@@ -308,9 +326,9 @@ export default function SettingsForm({ initial }: { initial: Initial }) {
               onClick={() => themeColorInputRef.current?.click()}
               className="transition cursor-pointer"
               style={{
-                width: 72,
-                height: 72,
-                borderRadius: 16,
+                width: 64,
+                height: 64,
+                borderRadius: 14,
                 border: "2px solid rgba(255,255,255,0.2)",
                 background: `linear-gradient(135deg, ${themeColor}, ${themeColor}99)`,
               }}
@@ -322,7 +340,7 @@ export default function SettingsForm({ initial }: { initial: Initial }) {
               value={themeColor}
               onChange={(e) => setThemeColor(e.target.value)}
               className="input font-mono"
-              style={{ fontSize: 13 }}
+              style={{ fontSize: 12 }}
               placeholder="#a855f7"
             />
             <div className="flex flex-wrap" style={{ gap: 6 }}>
@@ -333,8 +351,8 @@ export default function SettingsForm({ initial }: { initial: Initial }) {
                   onClick={() => setThemeColor(c)}
                   className="transition hover:scale-110"
                   style={{
-                    width: 24,
-                    height: 24,
+                    width: 22,
+                    height: 22,
                     borderRadius: 9999,
                     borderWidth: 2,
                     borderStyle: "solid",
@@ -355,9 +373,9 @@ export default function SettingsForm({ initial }: { initial: Initial }) {
               onClick={() => accentColorInputRef.current?.click()}
               className="transition cursor-pointer"
               style={{
-                width: 72,
-                height: 72,
-                borderRadius: 16,
+                width: 64,
+                height: 64,
+                borderRadius: 14,
                 border: "2px solid rgba(255,255,255,0.2)",
                 background: `linear-gradient(135deg, ${accentColor}, ${accentColor}99)`,
               }}
@@ -369,7 +387,7 @@ export default function SettingsForm({ initial }: { initial: Initial }) {
               value={accentColor}
               onChange={(e) => setAccentColor(e.target.value)}
               className="input font-mono"
-              style={{ fontSize: 13 }}
+              style={{ fontSize: 12 }}
               placeholder="#ec4899"
             />
             <div className="flex flex-wrap" style={{ gap: 6 }}>
@@ -380,13 +398,71 @@ export default function SettingsForm({ initial }: { initial: Initial }) {
                   onClick={() => setAccentColor(c)}
                   className="transition hover:scale-110"
                   style={{
-                    width: 24,
-                    height: 24,
+                    width: 22,
+                    height: 22,
                     borderRadius: 9999,
                     borderWidth: 2,
                     borderStyle: "solid",
                     background: c,
                     borderColor: accentColor === c ? "white" : "transparent",
+                  }}
+                  aria-label={c}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Background color */}
+          <div className="flex flex-col" style={{ gap: 10 }}>
+            <span style={{ fontSize: 13, color: "var(--muted)" }}>Background</span>
+            <button
+              type="button"
+              onClick={() => bgColorInputRef.current?.click()}
+              className="transition cursor-pointer"
+              style={{
+                width: 64,
+                height: 64,
+                borderRadius: 14,
+                border: "2px solid rgba(255,255,255,0.2)",
+                background: backgroundColor,
+                position: "relative",
+              }}
+              aria-label="Pick background color"
+            >
+              {/* Grid pattern to show darkness */}
+              <span
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  borderRadius: 12,
+                  background: "repeating-conic-gradient(rgba(255,255,255,0.06) 0% 25%, transparent 0% 50%) 0 0 / 12px 12px",
+                }}
+              />
+            </button>
+            <input ref={bgColorInputRef} type="color" value={backgroundColor} onChange={(e) => setBackgroundColor(e.target.value)} className="sr-only" />
+            <input
+              type="text"
+              value={backgroundColor}
+              onChange={(e) => setBackgroundColor(e.target.value)}
+              className="input font-mono"
+              style={{ fontSize: 12 }}
+              placeholder="#0a0a0c"
+            />
+            <div className="flex flex-wrap" style={{ gap: 6 }}>
+              {BG_SWATCHES.map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => setBackgroundColor(c)}
+                  className="transition hover:scale-110"
+                  style={{
+                    width: 22,
+                    height: 22,
+                    borderRadius: 9999,
+                    borderWidth: 2,
+                    borderStyle: "solid",
+                    background: c,
+                    borderColor: backgroundColor === c ? "white" : "rgba(255,255,255,0.25)",
                   }}
                   aria-label={c}
                 />
@@ -405,6 +481,61 @@ export default function SettingsForm({ initial }: { initial: Initial }) {
             background: `linear-gradient(135deg, ${themeColor}, ${accentColor})`,
           }}
         />
+
+        {/* Font selector */}
+        <div style={{ marginTop: 24 }}>
+          <span style={{ fontSize: 13, color: "var(--muted)", display: "block", marginBottom: 12 }}>Font</span>
+          <div className="flex flex-wrap" style={{ gap: 8 }}>
+            {FONT_OPTIONS.map((f) => {
+              const selected = fontFamily === f.slug;
+              return (
+                <button
+                  key={f.slug}
+                  type="button"
+                  onClick={() => setFontFamily(f.slug)}
+                  className="transition"
+                  style={{
+                    padding: "10px 16px",
+                    borderRadius: 12,
+                    border: "2px solid",
+                    borderColor: selected ? "var(--accent)" : "rgba(255,255,255,0.1)",
+                    background: selected ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.02)",
+                    cursor: "pointer",
+                    boxShadow: selected ? "0 0 0 1px var(--accent)" : "none",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: 4,
+                    minWidth: 80,
+                  }}
+                >
+                  <span
+                    style={{
+                      fontFamily: f.stack,
+                      fontSize: 18,
+                      fontWeight: 700,
+                      color: selected ? "var(--foreground)" : "var(--muted)",
+                      lineHeight: 1.2,
+                      letterSpacing: f.slug === "mono" ? "-0.03em" : "normal",
+                    }}
+                  >
+                    Aa
+                  </span>
+                  <span
+                    style={{
+                      fontFamily: f.stack,
+                      fontSize: 11,
+                      color: selected ? "var(--foreground)" : "var(--muted-2)",
+                      fontWeight: 500,
+                    }}
+                  >
+                    {f.name}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </Card>
 
       {/* ── Display badge ── */}
