@@ -208,7 +208,7 @@ export default function SettingsForm({ initial }: { initial: Initial }) {
                 </span>
               )}
             </div>
-            <div style={{ fontSize: 14, color: "var(--muted)" }}>@{initial.username}</div>
+            <div style={{ fontSize: 14, color: "var(--muted)" }}>&{initial.username}</div>
             {bio && <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 4 }}>{bio}</div>}
           </div>
         </div>

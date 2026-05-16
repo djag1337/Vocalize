@@ -147,7 +147,7 @@ export default async function CommunityPage({
               className="hover:underline"
               style={{ color: "var(--muted)" }}
             >
-              @{community.owner.username}
+              &{community.owner.username}
             </Link>
           </p>
 

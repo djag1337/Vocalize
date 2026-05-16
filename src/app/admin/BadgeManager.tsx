@@ -260,7 +260,7 @@ export default function BadgeManager({ allBadges }: { allBadges: Badge[] }) {
                   </div>
                   <div>
                     <div style={{ fontSize: 14, fontWeight: 700, color: "var(--foreground)" }}>
-                      @{u.username}
+                      &{u.username}
                     </div>
                     {u.displayName && (
                       <div style={{ fontSize: 12, color: "var(--muted)" }}>{u.displayName}</div>
@@ -313,7 +313,7 @@ export default function BadgeManager({ allBadges }: { allBadges: Badge[] }) {
                   {selectedUser.username[0].toUpperCase()}
                 </div>
                 <div>
-                  <div style={{ fontWeight: 700, fontSize: 15 }}>@{selectedUser.username}</div>
+                  <div style={{ fontWeight: 700, fontSize: 15 }}>&{selectedUser.username}</div>
                   {selectedUser.displayName && (
                     <div style={{ fontSize: 12, color: "var(--muted)" }}>{selectedUser.displayName}</div>
                   )}

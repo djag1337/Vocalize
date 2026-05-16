@@ -230,7 +230,7 @@ export default function PostModal() {
                       >
                         {post.author.displayName || post.author.username}
                       </Link>
-                      <span style={{ fontSize: 14, color: "var(--muted)" }}>@{post.author.username}</span>
+                      <span style={{ fontSize: 14, color: "var(--muted)" }}>&{post.author.username}</span>
                       <span style={{ color: "var(--muted)", fontSize: 14 }}>·</span>
                       <span style={{ fontSize: 13, color: "var(--muted)" }}>{timeAgo(post.createdAt)}</span>
                     </div>

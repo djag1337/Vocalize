@@ -73,8 +73,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     }
   }
 
-  // @mention notifications
-  const mentions = (content.match(/@([a-zA-Z0-9_]+)/g) || []).map((m: string) => m.slice(1).toLowerCase());
+  // &mention notifications
+  const mentions = (content.match(/&([a-zA-Z0-9_]+)/g) || []).map((m: string) => m.slice(1).toLowerCase());
   if (mentions.length) {
     const mentioned = await prisma.user.findMany({ where: { username: { in: mentions, mode: "insensitive" } }, select: { id: true } });
     for (const u of mentioned) {

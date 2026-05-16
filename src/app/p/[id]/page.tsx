@@ -148,7 +148,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
               </div>
               {/* Meta row */}
               <div className="flex items-center flex-wrap" style={{ fontSize: 13, color: "var(--muted)", gap: "6px", marginTop: "2px" }}>
-                <span>@{post.author.username}</span>
+                <span>&{post.author.username}</span>
                 {post.community && (
                   <>
                     <span>·</span>

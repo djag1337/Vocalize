@@ -119,7 +119,7 @@ export default function CommentSection({
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center" style={{ gap: "6px" }}>
                     <span className="font-semibold" style={{ fontSize: 13, color: "var(--foreground)" }}>
-                      @{c.author.username}
+                      &{c.author.username}
                     </span>
                     <span style={{ color: "var(--muted)", fontSize: 13 }}>·</span>
                     <span style={{ fontSize: 13, color: "var(--muted)" }}>{timeAgo(c.createdAt)}</span>

@@ -361,7 +361,7 @@ export default function PostCard({ post, density = "comfortable", myUserId }: Pr
                     <span>{post.author.displayBadge.icon}</span>
                   </span>
                 )}
-                <span className="truncate" style={{ fontSize: 15, color: 'var(--muted)' }}>@{post.author.username}</span>
+                <span className="truncate" style={{ fontSize: 15, color: 'var(--muted)' }}>&{post.author.username}</span>
                 <span className="shrink-0" style={{ fontSize: 15, color: 'var(--muted)' }}>&middot;</span>
                 <span className="shrink-0" style={{ fontSize: 13, color: 'var(--muted)' }}>{timeAgo(post.createdAt)}</span>
               </div>

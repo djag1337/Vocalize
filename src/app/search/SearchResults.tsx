@@ -162,7 +162,7 @@ export default async function SearchResults({ query }: { query: string }) {
                     {u.displayName || u.username}
                   </div>
                   <div style={{ fontSize: 15, color: "var(--muted)", marginTop: "2px" }}>
-                    @{u.username}
+                    &{u.username}
                   </div>
                   {u.bio && (
                     <p
@@ -221,7 +221,7 @@ export default async function SearchResults({ query }: { query: string }) {
                   )}
                   {p.community && <span style={{ color: "var(--muted)" }}>·</span>}
                   <span style={{ color: p.author.accentColor || "var(--accent)" }}>
-                    @{p.author.username}
+                    &{p.author.username}
                   </span>
                 </div>
                 <h3

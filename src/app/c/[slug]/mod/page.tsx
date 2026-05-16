@@ -199,7 +199,7 @@ export default async function ModPage({ params }: { params: Promise<{ slug: stri
                         >
                           {r.target.kind}
                         </span>
-                        <span>@{r.reporter.username}</span>
+                        <span>&{r.reporter.username}</span>
                         <span>·</span>
                         <span>{new Date(r.createdAt).toLocaleDateString()}</span>
                       </div>
@@ -294,7 +294,7 @@ export default async function ModPage({ params }: { params: Promise<{ slug: stri
                       <p style={{ fontSize: 12, color: "var(--muted)", marginTop: 3 }}>Reason: {p.removedReason}</p>
                     )}
                   </div>
-                  <span style={{ fontSize: 12, color: "var(--muted)", flexShrink: 0 }}>@{p.author.username}</span>
+                  <span style={{ fontSize: 12, color: "var(--muted)", flexShrink: 0 }}>&{p.author.username}</span>
                 </li>
               ))}
             </ul>
@@ -336,7 +336,7 @@ export default async function ModPage({ params }: { params: Promise<{ slug: stri
                   }}
                 >
                   <div>
-                    <span style={{ fontWeight: 700, color: a.mod.accentColor || "var(--accent)" }}>@{a.mod.username}</span>
+                    <span style={{ fontWeight: 700, color: a.mod.accentColor || "var(--accent)" }}>&{a.mod.username}</span>
                     <span style={{ color: "var(--muted)" }}> · {a.action.replace(/_/g, " ")}</span>
                     <span style={{ color: "var(--muted-2)" }}> ({a.targetType})</span>
                     {a.reason && <span style={{ color: "var(--muted)", fontStyle: "italic" }}> — {a.reason}</span>}

@@ -134,7 +134,7 @@ export default async function NotificationsPage() {
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ fontSize: 15, color: "var(--foreground)", lineHeight: "22px", margin: 0 }}>
                     <span style={{ fontWeight: 600, color: typeof color === "string" ? color : "var(--accent)" }}>
-                      @{n.actor?.username}
+                      &{n.actor?.username}
                     </span>{" "}
                     <span style={{ color: "var(--muted)" }}>{n.message}</span>
                   </p>

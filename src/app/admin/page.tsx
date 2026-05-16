@@ -355,7 +355,7 @@ export default async function AdminPage() {
                             {kind}
                           </span>
                           <span style={{ color: "var(--muted-2)" }}>by</span>
-                          <span style={{ fontWeight: 600, color: "var(--foreground)" }}>@{r.reporter.username}</span>
+                          <span style={{ fontWeight: 600, color: "var(--foreground)" }}>&{r.reporter.username}</span>
                           <span style={{ color: "var(--muted-2)" }}>·</span>
                           <Clock size={11} />
                           <span>{fmt(r.createdAt)}</span>
@@ -496,7 +496,7 @@ export default async function AdminPage() {
                       href={`/u/${u.username}`}
                       style={{ fontWeight: 700, fontSize: 14, color: "var(--foreground)" }}
                     >
-                      @{u.username}
+                      &{u.username}
                     </Link>
                     {u.displayName && (
                       <span style={{ fontSize: 13, color: "var(--muted)", marginLeft: 6 }}>
@@ -616,7 +616,7 @@ export default async function AdminPage() {
                           href={`/u/${s.owner.username}`}
                           style={{ color: color, fontWeight: 600 }}
                         >
-                          @{s.owner.username}
+                          &{s.owner.username}
                         </Link>
                       </p>
                     </div>
@@ -716,7 +716,7 @@ export default async function AdminPage() {
                         {p.title}
                       </Link>
                       <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, marginTop: 3, flexWrap: "wrap" }}>
-                        <span style={{ color: authorColor, fontWeight: 600 }}>@{p.author.username}</span>
+                        <span style={{ color: authorColor, fontWeight: 600 }}>&{p.author.username}</span>
                         {p.community && (
                           <>
                             <span style={{ color: "var(--muted-2)" }}>in</span>

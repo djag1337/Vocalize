@@ -129,7 +129,7 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
             </div>
           )}
         </div>
-        <span className="block" style={{ fontSize: 15, color: "var(--muted)", marginTop: 2 }}>@{user.username}</span>
+        <span className="block" style={{ fontSize: 15, color: "var(--muted)", marginTop: 2 }}>&{user.username}</span>
 
         {/* Bio */}
         {user.bio && (
@@ -274,7 +274,7 @@ export default async function UserProfilePage({ params }: { params: Promise<{ us
                   <span className="font-semibold truncate" style={{ fontSize: 15, color: "var(--foreground)" }}>
                     {user.displayName || user.username}
                   </span>
-                  <span className="truncate" style={{ fontSize: 14, color: "var(--muted)" }}>@{user.username}</span>
+                  <span className="truncate" style={{ fontSize: 14, color: "var(--muted)" }}>&{user.username}</span>
                   <span className="shrink-0" style={{ color: "var(--muted)" }}>·</span>
                   <span className="shrink-0" style={{ fontSize: 13, color: "var(--muted)" }}>{timeAgo(p.createdAt)}</span>
                   {typeIcon && <span className="shrink-0" style={{ fontSize: 13 }}>{typeIcon}</span>}

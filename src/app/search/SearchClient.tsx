@@ -103,7 +103,7 @@ export default function SearchIdle() {
                   <div className="font-semibold" style={{ fontSize: 15, color: "var(--foreground)" }}>
                     {u.name}
                   </div>
-                  <div style={{ fontSize: 13, color: "var(--muted)" }}>@{u.username}</div>
+                  <div style={{ fontSize: 13, color: "var(--muted)" }}>&{u.username}</div>
                 </div>
 
                 {/* Follow toggle */}
