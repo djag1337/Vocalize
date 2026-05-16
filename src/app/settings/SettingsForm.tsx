@@ -290,9 +290,12 @@ export default function SettingsForm({ initial }: { initial: Initial }) {
         </div>
       </Card>
 
-      {/* ── Colors ── */}
+      {/* ── Appearance ── */}
       <Card>
-        <SectionLabel>Colors</SectionLabel>
+        <SectionLabel>Appearance</SectionLabel>
+        <p style={{ marginBottom: 20, fontSize: 13, color: "var(--muted)", marginTop: -8 }}>
+          These colors apply across your entire Vocalize experience.
+        </p>
         <div
           className="grid"
           style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 24 }}

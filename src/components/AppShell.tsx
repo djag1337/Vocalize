@@ -1,8 +1,10 @@
 import Sidebar from "./Sidebar";
 import MobileNav from "./MobileNav";
 import TopBar from "./TopBar";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
-export default function AppShell({
+export default async function AppShell({
   username,
   title,
   children,
@@ -11,8 +13,30 @@ export default function AppShell({
   title?: string;
   children: React.ReactNode;
 }) {
+  const session = await auth();
+  let accentColor = "#ec4899";
+  let themeColor = "#a855f7";
+
+  if (session?.user?.id) {
+    const colors = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { accentColor: true, themeColor: true },
+    });
+    if (colors) {
+      accentColor = colors.accentColor;
+      themeColor = colors.themeColor;
+    }
+  }
+
   return (
-    <div className="flex min-h-screen" style={{ background: 'var(--background)' }}>
+    <div
+      className="flex min-h-screen"
+      style={{
+        background: 'var(--background)',
+        "--accent": accentColor,
+        "--accent-2": themeColor,
+      } as React.CSSProperties}
+    >
       {/* Spacer holds the sidebar's width in the flow so content isn't hidden behind it */}
       <div className="hidden md:block shrink-0" style={{ width: 76 }} />
       <Sidebar username={username} />
