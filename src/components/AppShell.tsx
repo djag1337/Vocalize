@@ -53,8 +53,8 @@ export default async function AppShell({
       },
     });
     if (prefs) {
-      accentColor = prefs.accentColor;
-      themeColor = prefs.themeColor;
+      accentColor = prefs.accentColor ?? "#ec4899";
+      themeColor = prefs.themeColor ?? "#a855f7";
       backgroundColor = prefs.backgroundColor ?? "#0a0a0c";
       fontFamily = prefs.fontFamily ?? "inter";
     }
