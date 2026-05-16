@@ -6,13 +6,13 @@
 
 :root {
   --background: #000000;
-  --surface: #1C1C1E;
-  --surface-2: #1C1C1E;
-  --card: #2C2C2E;
-  --card-hover: #3A3A3C;
-  --surface-3: #3A3A3C;
-  --border: rgba(84,84,88,0.65);
-  --border-2: rgba(84,84,88,0.45);
+  --surface: #0d0d0d;
+  --surface-2: #0d0d0d;
+  --card: #111113;
+  --card-hover: #18181b;
+  --surface-3: #141416;
+  --border: rgba(255,255,255,0.07);
+  --border-2: rgba(255,255,255,0.05);
   --foreground: #FFFFFF;
   --muted: #8E8E93;
   --muted-2: #636366;
